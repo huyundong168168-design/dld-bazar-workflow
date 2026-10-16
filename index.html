@@ -93,7 +93,32 @@ async function search() {
     out.style.whiteSpace = 'pre-line';
 
   } catch (error) {
-    out.textContent = '查询失败：' + error.message;
+out.textContent = '商城接口失败，正在查询备用目录...';
+
+try {
+  const r = await fetch('./dld_bazar_public_catalog.csv');
+  if (!r.ok) throw new Error('CSV HTTP ' + r.status);
+
+  const csv = await r.text();
+  const lines = csv.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
+  const rows = lines.slice(1).map(line => line.split(','));
+
+  const p = rows.find(row =>
+    String(row[0] || '').trim() === sku ||
+    String(row[6] || '').trim() === sku
+  );
+
+  out.textContent = p
+    ? '来源：GitHub 备用目录\n商品名称：' + p[1] +
+      '\nSKU：' + p[0] +
+      '\n条码：' + (p[6] || '无') +
+      '\n目录售价：€' + p[4] +
+      '\n实时库存：未提供'
+    : '商城接口失败，备用目录也未找到：' + sku;
+} catch (csvError) {
+  out.textContent = '商城查询失败：' + error.message +
+    '\n备用目录查询失败：' + csvError.message;
+}
   }
 }
 
