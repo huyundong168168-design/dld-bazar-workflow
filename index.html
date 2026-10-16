@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DLD BAZAR 自动上架工作台</title>
+<style>
+body{margin:0;background:#f2f5fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#152238}
+header{background:#123b85;color:white;padding:30px 20px}
+h1{font-size:24px;margin:0 0 8px}
+main{padding:18px}
+.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 2px 10px #0001}
+button{background:#1769e0;color:white;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}
+input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:10px 0}
+small{color:#667085}
+</style>
+</head>
+<body>
+<header>
+<h1>🛒 DLD BAZAR</h1>
+<div>自动上架工作台 · 测试版</div>
+</header>
+<main>
+<div class="card">
+<h3>商品查询</h3>
+<input id="sku" placeholder="输入 SKU 或条码">
+<button onclick="search()">查询商品</button>
+<p id="result"></p>
+</div>
+<div class="card">
+<h3>📦 库存匹配</h3>
+<small>等待连接受保护的库存数据库</small>
+</div>
+<div class="card">
+<h3>📷 图片审核</h3>
+<small>等待接入商品图片处理流程</small>
+</div>
+<div class="card">
+<h3>🚀 自动上架</h3>
+<button onclick="alert('安全测试模式：尚未连接发布接口')">模拟测试</button>
+</div>
+<div class="card">
+<h3>🔒 系统状态</h3>
+<p>演示模式 · 不连接真实商城</p>
+<small>不会修改商品、价格或库存</small>
+</div>
+</main>
+<script>
+function search(){
+let sku=document.getElementById('sku').value.trim();
+document.getElementById('result').textContent=
+sku?'测试模式：已收到 SKU '+sku+'，数据库尚未连接':'请输入 SKU';
+}
+</script>
+</body>
+</html>
