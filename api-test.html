@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DLD BAZAR API 测试</title>
+<h2>DLD BAZAR 接口测试</h2>
+<p>只读测试，不修改商品数据</p>
+<input id="sku" value="2631567">
+<button onclick="test()">测试接口</button>
+<pre id="result">等待测试</pre>
+<script>
+async function test() {
+  const sku = document.getElementById('sku').value;
+  const out = document.getElementById('result');
+  out.textContent = '正在测试...';
+  try {
+    const r = await fetch(
+      'https://httpbin.org/get?sku=' +
+      encodeURIComponent(sku)
+    );
+    const data = await r.json();
+    out.textContent =
+      'HTTP 状态码: ' + r.status +
+      '\n发送 SKU: ' + sku +
+      '\n返回 SKU: ' + data.args.sku +
+      '\n结果: 测试服务已响应';
+  } catch (e) {
+    out.textContent = '请求失败: ' + e.message;
+  }
+}
+</script>
+</html>
