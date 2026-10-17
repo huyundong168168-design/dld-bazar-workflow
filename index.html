@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+ni!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -77,9 +76,9 @@ async function search() {
     }
 
     const product = items.find(p =>
-      String(p.sku) === sku ||
-      String(p.barcode || '') === sku
-    );
+  String(p.sku || '').trim().toUpperCase() === sku.trim().toUpperCase() ||
+  String(p.barcode || '').trim().toUpperCase() === sku.trim().toUpperCase()
+);
 
     out.textContent = product
       ? '商品名称：' + product.name +
@@ -103,11 +102,10 @@ try {
   const lines = csv.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
   const rows = lines.slice(1).map(line => line.split(','));
 
-  const p = rows.find(row =>
-    String(row[0] || '').trim() === sku ||
-    String(row[6] || '').trim() === sku
-  );
-
+    const p = rows.find(row =>
+  String(row[0] || '').trim().toUpperCase() === sku.trim().toUpperCase() ||
+  String(row[6] || '').trim().toUpperCase() === sku.trim().toUpperCase()
+);
   out.textContent = p
     ? '来源：GitHub 备用目录\n商品名称：' + p[1] +
       '\nSKU：' + p[0] +
