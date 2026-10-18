@@ -1,125 +1,20 @@
-ni!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DLD BAZAR 自动上架工作台</title>
-<style>
-body{margin:0;background:#f2f5fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#152238}
-header{background:#123b85;color:white;padding:30px 20px}
-h1{font-size:24px;margin:0 0 8px}
-main{padding:18px}
-.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 2px 10px #0001}
-button{background:#1769e0;color:white;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}
-input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:10px 0}
-small{color:#667085}
-</style>
-</head>
-<body>
-<header>
-<h1>🛒 DLD BAZAR</h1>
-<div>自动上架工作台 · 测试版</div>
-</header>
-<main>
-<div class="card">
-<h3>商品查询</h3>
-<input id="sku" placeholder="输入 SKU 或条码">
-<button onclick="search()">查询商品</button>
-<p id="result"></p>
-</div>
-<div class="card">
-<h3>📦 库存匹配</h3>
-<small>等待连接受保护的库存数据库</small>
-</div>
-<div class="card">
-<h3>📷 图片审核</h3>
-<small>等待接入商品图片处理流程</small>
-</div>
-<div class="card">
-<h3>🚀 自动上架</h3>
-<button onclick="alert('安全测试模式：尚未连接发布接口')">模拟测试</button>
-</div>
-<div class="card">
-<h3>🔒 系统状态</h3>
-<p>演示模式 · 不连接真实商城</p>
-<small>不会修改商品、价格或库存</small>
-</div>
-</main>
-<script>
-
-async function search() {
-  const sku = document.getElementById('sku').value.trim();
-  const out = document.getElementById('result');
-
-  if (!sku) {
-    out.textContent = '请输入 SKU 或条码';
-    return;
-  }
-
-  out.textContent = '正在查询 DLD BAZAR 商城...';
-
-  try {
-    const response = await fetch(
-      'https://www.dldbazar.com/api/products',
-      { method: 'GET', credentials: 'omit' }
-    );
-
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status);
-    }
-
-    const data = await response.json();
-    const items = Array.isArray(data) ? data : data.items;
-
-    if (!Array.isArray(items)) {
-      throw new Error('商品数据格式不正确');
-    }
-
-    const product = items.find(p =>
-  String(p.sku || '').trim().toUpperCase() === sku.trim().toUpperCase() ||
-  String(p.barcode || '').trim().toUpperCase() === sku.trim().toUpperCase()
-);
-
-    out.textContent = product
-      ? '商品名称：' + product.name +
-        '\nSKU：' + product.sku +
-        '\n条码：' + (product.barcode || '无') +
-        '\n售价：€' + product.price +
-        '\n库存：' + product.stock +
-        '\n状态：' + (product.is_active ? '上架中' : '未上架')
-      : '商城中未找到 SKU 或条码：' + sku;
-
-    out.style.whiteSpace = 'pre-line';
-
-  } catch (error) {
-out.textContent = '商城接口失败，正在查询备用目录...';
-
-try {
-  const r = await fetch('./dld_bazar_public_catalog.csv');
-  if (!r.ok) throw new Error('CSV HTTP ' + r.status);
-
-  const csv = await r.text();
-  const lines = csv.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
-  const rows = lines.slice(1).map(line => line.split(','));
-
-    const p = rows.find(row =>
-  String(row[0] || '').trim().toUpperCase() === sku.trim().toUpperCase() ||
-  String(row[6] || '').trim().toUpperCase() === sku.trim().toUpperCase()
-);
-  out.textContent = p
-    ? '来源：GitHub 备用目录\n商品名称：' + p[1] +
-      '\nSKU：' + p[0] +
-      '\n条码：' + (p[6] || '无') +
-      '\n目录售价：€' + p[4] +
-      '\n实时库存：未提供'
-    : '商城接口失败，备用目录也未找到：' + sku;
-} catch (csvError) {
-  out.textContent = '商城查询失败：' + error.message +
-    '\n备用目录查询失败：' + csvError.message;
-}
-  }
-}
-
-</script>
-</body>
-</html>
+<style>body{margin:0;background:#f2f5fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#152238}header{background:#123b85;color:#fff;padding:30px 20px}h1{font-size:24px;margin:0 0 8px}main{padding:18px}.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 2px 10px #0001}button{background:#1769e0;color:#fff;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:10px 0}small{color:#667085}.result{white-space:pre-line;overflow-wrap:anywhere;line-height:1.65}</style>
+</head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · 只读测试版</div></header><main>
+<div class="card"><h3>商品查询（商城实时接口）</h3><input id="sku" placeholder="输入 SKU 或条码"><button onclick="search()">查询商品</button><p id="result" class="result"></p></div>
+<div class="card"><h3>📦 GitHub 库存目录匹配及防重复</h3><small>库存目录为2026-10-18公开快照，不含实时库存；已上架目录为旧快照，重复识别仅供预检，不能替代商城服务器端查重。</small><input id="inventoryQuery" placeholder="输入条码或 SKU"><button onclick="checkInventoryAndDuplicate()">查询两份 GitHub CSV</button><p id="inventoryResult" class="result"></p></div>
+<div class="card"><h3>📷 图片审核</h3><small>等待接入商品图片处理流程</small></div>
+<div class="card"><h3>🚀 自动上架</h3><button onclick="alert('安全测试模式：尚未连接发布接口')">模拟测试</button></div>
+<div class="card"><h3>🔒 系统状态</h3><p>只读测试模式 · 不连接发布接口</p><small>不会修改商品、价格或库存</small></div>
+</main><script>
+const INVENTORY_CSV='./DLD_BAZAR_65535_%25E5%2585%25AC%25E5%25BC%2580%25E5%2595%2586%25E5%2593%2581%25E7%259B%25AE%25E5%25BD%2595_%25E4%25B8%258D%25E5%2590%25AB%25E5%25BA%2593%25E5%25AD%2598_20261018.csv';
+function parseCsv(text,delimiter){const rows=[];let row=[],f='',q=false;text=text.replace(/^\uFEFF/,'');for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(q&&text[i+1]==='"'){f+='"';i++;}else q=!q;}else if(c===delimiter&&!q){row.push(f);f='';}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&text[i+1]==='\n')i++;row.push(f);f='';if(row.some(x=>x.length))rows.push(row);row=[];}else f+=c;}if(f||row.length){row.push(f);rows.push(row);}return rows;}
+function codeKey(v){let s=String(v||'').trim().toUpperCase().replace(/[\s.\-\/]/g,'');if(/^\d+$/.test(s)){s=s.replace(/^0+/,'')||'0';return s.slice(0,12);}return s;}
+function skuKey(v){return String(v||'').trim().toUpperCase();}
+let cache=null;
+async function catalogs(){if(!cache)cache=Promise.all([fetch(INVENTORY_CSV).then(r=>{if(!r.ok)throw Error('库存目录 HTTP '+r.status);return r.text()}),fetch('./dld_bazar_public_catalog.csv').then(r=>{if(!r.ok)throw Error('已上架目录 HTTP '+r.status);return r.text()})]).then(([a,b])=>({inventory:parseCsv(a,';').slice(1),uploaded:parseCsv(b,',').slice(1)})).catch(e=>{cache=null;throw e});return cache;}
+async function checkInventoryAndDuplicate(){const v=document.getElementById('inventoryQuery').value.trim(),out=document.getElementById('inventoryResult');if(!v){out.textContent='请输入条码或 SKU';return;}out.textContent='正在读取 GitHub 目录……';try{const {inventory,uploaded}=await catalogs();const k=codeKey(v),sku=skuKey(v);const ins=inventory.filter(r=>r[0]&&codeKey(r[0])===k);const ups=uploaded.filter(r=>(r[6]&&codeKey(r[6])===k)||(r[0]&&skuKey(r[0])===sku));const lines=['库存目录快照：'+(ins.length?ins.length+' 条匹配':'未找到'),...ins.slice(0,3).map(r=>'编码：'+r[0]+'｜名称：'+r[1]+'｜售价：€'+r[2]),'已上架目录快照：'+(ups.length?ups.length+' 条疑似重复':'未找到'),...ups.slice(0,3).map(r=>'SKU：'+r[0]+'｜条码：'+(r[6]||'无')+'｜名称：'+r[1]),ups.length?'结论：疑似重复，必须人工审核，禁止新增。':'结论：旧目录未匹配；不能据此认定商城无此商品，发布前还需实时查询与服务器二次查重。','只读结果，没有执行发布或任何写入。'];out.textContent=lines.join('\n');}catch(e){out.textContent='匹配失败：'+e.message+'。禁止自动发布。';}}
+async function search(){const sku=document.getElementById('sku').value.trim(),out=document.getElementById('result');if(!sku){out.textContent='请输入 SKU 或条码';return;}out.textContent='正在查询 DLD BAZAR 商城...';try{const r=await fetch('https://www.dldbazar.com/api/products',{method:'GET',credentials:'omit'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json(),items=Array.isArray(data)?data:data.items;if(!Array.isArray(items))throw Error('商品数据格式不正确');const p=items.find(x=>skuKey(x.sku)===skuKey(sku)||codeKey(x.barcode)===codeKey(sku));out.textContent=p?'商品名称：'+p.name+'\nSKU：'+p.sku+'\n条码：'+(p.barcode||'无')+'\n售价：€'+p.price+'\n库存：'+p.stock+'\n状态：'+(p.is_active?'上架中':'未上架'):'商城中未找到 SKU 或条码：'+sku;}catch(e){out.textContent='商城接口失败，正在查询备用目录...';try{const r=await fetch('./dld_bazar_public_catalog.csv');if(!r.ok)throw Error('CSV HTTP '+r.status);const rows=parseCsv(await r.text(),',').slice(1);const p=rows.find(x=>skuKey(x[0])===skuKey(sku)||codeKey(x[6])===codeKey(sku));out.textContent=p?'来源：GitHub 备用目录\n商品名称：'+p[1]+'\nSKU：'+p[0]+'\n条码：'+(p[6]||'无')+'\n目录售价：€'+p[4]+'\n实时库存：未提供':'商城查询失败，备用目录也未找到：'+sku;}catch(ce){out.textContent='商城查询失败：'+e.message+'\n备用目录失败：'+ce.message;}}}
+</script></body></html>
