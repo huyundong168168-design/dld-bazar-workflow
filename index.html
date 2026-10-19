@@ -2,15 +2,56 @@
 <style>body{margin:0;background:#f2f5fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#152238}header{background:#123b85;color:#fff;padding:30px 20px}h1{font-size:24px;margin:0 0 8px}main{padding:18px}.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 2px 10px #0001}button{background:#1769e0;color:#fff;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:10px 0}small{color:#667085}.result{white-space:pre-line;overflow-wrap:anywhere;line-height:1.65}.photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-top:12px}.photo-item{border:1px solid #ddd;padding:10px;border-radius:10px;min-width:0}.photo-item img{width:100%;aspect-ratio:1;object-fit:contain;background:white}.photo-item p{font-size:13px;overflow-wrap:anywhere}.photo-item label{font-size:13px}.photo-item button{margin-top:9px}.photo-item .ai-note{color:#34495e;font-size:13px;background:#f0f5ff;padding:9px;border-radius:7px}.photo-item input[type=range]{width:100%}.danger{color:#ad3b26}.ok{color:#186b35}.subbutton{margin-top:10px;background:#34495e}button:disabled{opacity:.45}input[type=file]{font-size:14px}</style><style id="v4-styles">
 .v4{margin:16px auto;max-width:1120px;padding:0 16px}.v4 *{box-sizing:border-box}.v4header{background:linear-gradient(110deg,#122a50,#2053a0);color:#fff;padding:23px;border-radius:16px}.v4header p{opacity:.85}.v4 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:15px 0}.v4 .step{background:#fff;border:1px solid #dce4f1;padding:12px;border-radius:12px;font-weight:600}.v4 .panel{padding:18px;background:white;border:1px solid #dce4f1;border-radius:14px;margin:12px 0;box-shadow:0 2px 12px #081a3210}.v4 .panel h3{margin:0 0 10px}.v4 .drop{padding:16px;border:2px dashed #9bb0ce;border-radius:12px;background:#f8fbff;display:block;margin:9px 0}.v4 input[type=file]{width:100%;margin-top:7px}.v4 .vbutton{background:#1d4f97;color:white;border:0;padding:12px 16px;border-radius:10px;font-weight:600;cursor:pointer;margin:4px 4px 4px 0}.v4 .vbutton:disabled{background:#8d9bad;cursor:not-allowed}.v4 .secondary{background:#e8edf6;color:#19345a}.v4 small,.v4 .muted{color:#637083}.v4 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.v4 .stat{background:#eef4fd;padding:12px;border-radius:10px}.v4 .stat b{font-size:22px;display:block}.v4 .scroll{overflow:auto;max-height:550px}.v4 table{border-collapse:collapse;width:100%;min-width:980px;font-size:13px}.v4 td,.v4 th{padding:7px;border-bottom:1px solid #e5eaf2;vertical-align:top}.v4 th{background:#f1f5fc;position:sticky;top:0}.v4 select,.v4 td input{max-width:180px;min-width:80px;padding:5px;border-radius:6px;border:1px solid #a9b6cb}.v4 .alert{background:#fff6eb;border-left:4px solid #d58a28;padding:12px;border-radius:8px;margin:10px 0}.v4 .ok{background:#eef9f2;border-left:4px solid #27a55c;padding:10px}.v4 .thumb{width:70px;height:70px;object-fit:contain;background:#fff;border:1px solid #ddd}.v4 .status{white-space:pre-wrap;font-size:13px;padding:10px;background:#f3f6fc;border-radius:8px;min-height:35px}.v4 .hidden{display:none}.v4 .focus-title{font-size:14px;margin-bottom:6px}
 @media(max-width:650px){.v4 .steps{grid-template-columns:repeat(2,1fr)}.v4 .stats{grid-template-columns:repeat(2,1fr)}.v4header{padding:15px}.v4 .panel{padding:12px}}
-</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · P1＋P2 AI 主体提取与商城图美化隔离测试版</div></header><section class="v4" id="workflow-v4">
-<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 V4</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
+</style>
+<style id="v51-styles">
+.v51{max-width:1120px;margin:14px auto;padding:0 16px;color:#183050}
+.v51 *{box-sizing:border-box}
+.v51 .panel{background:#fff;padding:18px;border:1px solid #dce4ef;border-radius:14px}
+.v51 .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;margin-top:14px}
+.v51 .item{border:1px solid #dce4ef;border-radius:12px;padding:12px;background:#fafcff}
+.v51 .triptych{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:9px 0}
+.v51 figure{margin:0}.v51 img{width:100%;height:100px;background:white;object-fit:contain;border:1px solid #ddd;border-radius:6px}
+.v51 figcaption{font-size:11px;text-align:center;color:#65758b}
+.v51 button{width:auto;font-size:13px;padding:10px 12px;margin:3px 3px 3px 0}
+.v51 button:disabled{opacity:.45}
+.v51 .status{font-size:13px;padding:10px;background:#eef3fa;border-radius:9px;white-space:pre-wrap;margin-top:10px}
+.v51 .warning{color:#993b12}
+.v51 select,.v51 input[type=text]{padding:10px;border-radius:7px;border:1px solid #abbcd3;width:100%;margin:7px 0}
+.v51 input[type=checkbox]{width:auto;margin-right:5px}
+.v51 .controls{display:flex;flex-wrap:wrap;gap:5px}
+.v51 .muted{color:#65758b;font-size:13px}
+.v51 .pill{display:inline-block;background:#e9eff8;padding:4px 8px;border-radius:30px;font-size:12px}
+@media(max-width:560px){.v51 .panel{padding:12px}.v51 .triptych img{height:80px}}
+</style>
+</head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · V5.1 AI 图片处理及人工审核</div></header><section class="v4" id="workflow-v4">
+<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 V5.1</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
 <div class="steps"><div class="step">① 发票导入</div><div class="step">② 图片来源</div><div class="step">③ 防重复</div><div class="step">④ 图片审核</div><div class="step">⑤ 整批确认</div><div class="step">⑥ FORTE 分包</div></div>
 <div class="panel"><h3>① 整张发票导入 · 不限25款</h3><label class="drop">选择发票（XLSX/XLS/CSV），一次导入所有商品<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button class="vbutton" id="v4Load" onclick="v4LoadInvoice()">读取整张发票</button><div class="status" id="v4InvoiceStatus">等待上传。XLSX 解析首次需要加载 SheetJS，断网时可改用 CSV。</div></div>
 <div class="panel"><h3>② 图片来源与匹配</h3><label class="drop">选择商品原图（JPG、PNG、WEBP；文件名建议使用真实 EAN / 货号）<input id="v4Images" type="file" multiple accept="image/jpeg,image/png,image/webp"></label><label class="drop">参考目录 PDF（允许多份；预览定位用途，整页不得直接当正式商品图）<input id="v4Pdfs" type="file" accept="application/pdf,.pdf" multiple></label><button class="vbutton secondary" onclick="v4AttachImages()">导入并按编码匹配图片</button><div class="status" id="v4ImageStatus">等待商品图片。PDF 可作为人工参考来源，不会自动伪装成白底图。</div></div>
 <div class="panel"><h3>③ 全量库存与商城防重复</h3><button class="vbutton" id="v4Snapshot" onclick="v4CheckSnapshots()">运行两份 GitHub 历史目录预检</button><button class="vbutton secondary" onclick="v4TryLive()">检查商城实时 API 连通性</button><div class="alert">安全门禁：历史目录未命中 ≠ 新品。浏览器的实时查询结果不能替代服务器发布前二次查重。实时查询失败时禁止正式发布。</div><div class="status" id="v4DupStatus">尚未运行；默认全部禁止发布。</div></div>
 <div class="panel"><h3>④ + ⑤ 全批商品审核</h3><div class="stats"><div class="stat"><b id="v4Total">0</b><small>发票商品</small></div><div class="stat"><b id="v4Existing">0</b><small>历史目录命中</small></div><div class="stat"><b id="v4HasImage">0</b><small>原图已关联</small></div><div class="stat"><b id="v4Approved">0</b><small>人工审核确认</small></div></div><p class="muted">支持单款销售价、法语名称检查。若商品已存在，不允许添加为新品。图片仅执行非生成式白底规范化，不能冒充 AI 抠图。</p><div class="scroll"><table><thead><tr><th>行</th><th>条码/EAN</th><th>货号</th><th>原商品名</th><th>法语名称</th><th>销售价 €</th><th>数量</th><th>匹配状态</th><th>图片</th><th>人工确认</th></tr></thead><tbody id="v4Rows"><tr><td colspan="10">先上传发票</td></tr></tbody></table></div></div>
 <div class="panel"><h3>⑥ 分包导出与安全检查</h3><p>每包最多25款；审核包包含按行分组清单及全部状态，不会产生虚假的可发布 <code>products.csv</code>。</p><button class="vbutton" id="v4Export" onclick="v4ExportReview()" disabled>下载审核分批 ZIP（每批≤25款）</button><button class="vbutton secondary" id="v4Publish" disabled>正式 FORTE 上传包（未通过安全门禁）</button><div class="status" id="v4ExportStatus">必须完成：准确配图、售价确认、AI 图片验证及服务端实时二次查重。当前 complete=false；发布请求0。</div></div>
-</section><main>
+</section>
+<section class="v51" id="ai-workflow-v51">
+<div class="panel">
+<h2>✨ V5.1 AI 商品图片处理中心</h2>
+<p class="muted">与上方 V4 发票商品表联动。P1-B 抠图 → P2 美化 → 规格风险检查 → 人工选择图片 → 人工最终确认。AI 通过同源后端接口执行；未部署接口时明确显示失败，不会假装 AI 成功。</p>
+<p class="warning">安全隔离：本区不执行商品发布；不绕过商城实时防重复，也不把本区图片审核结果直接当作 FORTE 合格上传包。</p>
+<label for="v51Api">AI 后端 API 基地址（留空使用当前网站同源）</label>
+<input id="v51Api" type="text" placeholder="例如 https://你的受信任AI后端（必须由你管理）">
+<div class="controls">
+<button type="button" onclick="v51Sync()">读取当前发票及已关联图片</button>
+<button type="button" onclick="v51Batch('extract')" id="v51CutAll">批量 AI 抠图</button>
+<button type="button" onclick="v51Batch('enhance')" id="v51EnhanceAll">批量 AI 美化</button>
+<button type="button" onclick="v51Batch('risk')" id="v51RiskAll">批量规格风险检查</button>
+<button type="button" onclick="v51Export()" id="v51Export">导出已审核图片 ZIP（非商品发布包）</button>
+</div>
+<div id="v51Status" class="status" aria-live="polite">先在 V4 导入发票及关联图片，再点击“读取当前发票及已关联图片”。</div>
+<div id="v51Count" class="muted"></div>
+<div class="items" id="v51Items"></div>
+</div>
+</section>
+<main>
 <div class="card"><h3>商品查询（商城实时接口）</h3><input id="sku" placeholder="输入 SKU 或条码"><button onclick="search()">查询商品</button><p id="result" class="result"></p></div>
 <div class="card"><h3>📦 GitHub 库存目录匹配及防重复</h3><small>库存目录为2026-10-18公开快照，不含实时库存；已上架目录为旧快照，重复识别仅供预检，不能替代商城服务器端查重。</small><input id="inventoryQuery" placeholder="输入条码或 SKU"><button onclick="checkInventoryAndDuplicate()">查询两份 GitHub CSV</button><p id="inventoryResult" class="result"></p></div>
 <div class="card"><h3>📷 商品图片自动处理（本地隔离测试）</h3><p><small>P1＋P2隔离测试：建议首次只用1张真实商品图片；一次最多25张 JPG / PNG / WEBP；优先使用可靠条码或 SKU 才能自动匹配，例如 8052533410179.jpg；IMG_2959.png 等手机默认文件名需要人工核对后重新命名。可先手动选择商品区域，再执行浏览器端 AI 去背景；只有模型成功才标记已抠图。人工可调光线和饱和度，输出1254×1254白底 JPG（不虚构商品内容）。匹配后仍需逐张人工确认。所有处理在浏览器本地执行，禁止自动发布。</small></p>
@@ -230,4 +271,162 @@ async function v4TryLive(){try{v4Text('v4DupStatus','正在检查商城只读接
 function v4CsvCell(x){return '"'+String(x??'').replace(/"/g,'""')+'"'}
 function v4MakeCsv(rows){const hdr=['发票行号','EAN','供应商货号','发票原名称','人工法语名称','采购数量','已确认售价TTC','历史查重结果','图片来源','人工审核','说明'];return '\uFEFF'+[hdr,...rows.map(r=>[r.num,r.ean,r.sku,r.name,r.fr,r.qty,r.price,r.history,r.imageName,r.confirmed?'确认':'未确认',r.notes])].map(r=>r.map(v4CsvCell).join(';')).join('\r\n')}
 async function v4ExportReview(){if(!v4.rows.length)return;const enc=new TextEncoder(),files=[];for(let i=0;i<v4.rows.length;i+=25){const part=v4.rows.slice(i,i+25),id=String(1+Math.floor(i/25)).padStart(2,'0');files.push({name:`审核批次_${id}_${part.length}款.csv`,data:enc.encode(v4MakeCsv(part))})}files.push({name:'全部商品审核.csv',data:enc.encode(v4MakeCsv(v4.rows))});files.push({name:'README_严禁直接发布.txt',data:enc.encode(`发票：${v4.source}\n商品数：${v4.rows.length}\nPDF来源：${v4.pdfs.join(', ')}\n实时接口：${v4.liveResult}\n这是隔离审核清单，不是FORTE正式上传包；无products.csv。\n缺少合格AI图片与服务器二次查重，complete=false，发布请求=0。`)});const blob=zipStore(files),a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=`DLD_BAZAR_${v4.rows.length}款_分批审核_非发布.zip`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),15000);v4Text('v4ExportStatus',`已生成 ${files.length-2} 个审核批次（每批≤25款）；没有生成可发布 products.csv。安全门禁继续生效。`)}
-</script></body></html>
+</script>
+<script id="v51-script">
+'use strict';
+const v51={items:[],running:false};
+const v51El=id=>document.getElementById(id);
+const v51Say=s=>{v51El('v51Status').textContent=s};
+const v51Esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function v51Endpoint(path){
+ const raw=v51El('v51Api').value.trim();
+ if(raw && !/^https:\/\//i.test(raw))throw Error('后端地址只允许 HTTPS');
+ const base=raw||location.origin;
+ return new URL(path,base.endsWith('/')?base:base+'/').href;
+}
+function v51Sync(){
+ if(typeof v4==='undefined'||!Array.isArray(v4.rows)){v51Say('当前页面未加载 V4 发票模块');return}
+ for(const p of v51.items){if(p.localUrl)URL.revokeObjectURL(p.localUrl)}
+ v51.items=v4.rows.map((row,i)=>({
+   id:i,ean:String(row.ean||''),sku:String(row.sku||''),name:String(row.fr||row.name||''),
+   file:row.image||null,original:row.imageUrl||'',cutout:'',enhanced:'',
+   taskId:'',stage:'pending',risk:'unknown',flags:[],approved:false,chosen:'none',localUrl:'',message:''
+ }));
+ v51Say(`已载入 ${v51.items.length} 款；已关联原图 ${v51.items.filter(x=>x.file).length} 张。无原图商品禁止进入 AI。`);
+ v51Render();
+}
+function v51Render(){
+ v51El('v51Count').textContent=`总数 ${v51.items.length}｜已抠图 ${v51.items.filter(x=>x.cutout).length}｜已美化 ${v51.items.filter(x=>x.enhanced).length}｜最终确认 ${v51.items.filter(x=>x.approved).length}`;
+ const holder=v51El('v51Items');holder.innerHTML='';
+ for(const p of v51.items){
+  const root=document.createElement('article');root.className='item';
+  root.innerHTML=`<b>${v51Esc(p.ean||p.sku||'无编码')}</b> <span class="pill">${v51Esc(p.stage)}</span>
+   <div class="muted">${v51Esc(p.name)}</div>
+   <div class="triptych"><figure><img alt="原图" src="${v51Esc(p.original)}"><figcaption>原图</figcaption></figure>
+   <figure><img alt="抠图" src="${v51Esc(p.cutout)}"><figcaption>AI 抠图</figcaption></figure>
+   <figure><img alt="美化" src="${v51Esc(p.enhanced)}"><figcaption>AI 美化</figcaption></figure></div>
+   <div class="muted">风险：${v51Esc(p.risk)} ${v51Esc(p.flags.join('、'))}</div>
+   <div class="controls"></div>
+   <label class="muted">选择审核版本</label>
+   <select><option value="none">尚未选择</option><option value="original">原图（仅作对照）</option><option value="cutout">AI 抠图</option><option value="enhanced">AI 美化图</option></select>
+   <label class="muted"><input type="checkbox">我已核实图片、EAN、颜色、尺寸、容量、件数和真实商品一致</label>
+   <div class="muted" aria-live="polite">${v51Esc(p.message||'等待处理')}</div>`;
+  const controls=root.querySelector('.controls');
+  for(const [action,label] of [['extract','P1-B 抠图'],['enhance','P2 美化'],['risk','规格风险检查']]){
+   const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=v51.running||!p.file||(action==='enhance'&&!p.cutout)||(action==='risk'&&!p.enhanced);
+   b.onclick=()=>v51Execute(p,action);controls.appendChild(b);
+  }
+  const select=root.querySelector('select');select.value=p.chosen;
+  select.onchange=()=>{p.chosen=select.value;p.approved=false;v51Render()};
+  const check=root.querySelector('input[type=checkbox]');check.checked=p.approved;
+  check.disabled=p.risk!=='low'||p.chosen!=='enhanced'||!p.enhanced;
+  check.onchange=()=>{p.approved=check.checked;v51Render()};
+  holder.appendChild(root);
+ }
+}
+async function v51Call(path,payload){
+ const r=await fetch(v51Endpoint(path),{
+   method:'POST',headers:{'Content-Type':'application/json'},credentials:'omit',
+   body:JSON.stringify(payload),cache:'no-store'
+ });
+ if(!r.ok)throw Error('接口 '+path+' HTTP '+r.status);
+ const data=await r.json();
+ if(data.success!==true)throw Error(data.error||'后端未确认成功');
+ return data;
+}
+function v51GuardImage(url){
+ if(typeof url!=='string'||!/^https:\/\//i.test(url))throw Error('接口必须返回 HTTPS 图片 URL');
+ return url;
+}
+async function v51Poll(taskId){
+ if(!taskId)throw Error('任务缺少 task_id');
+ for(let i=0;i<15;i++){
+  const r=await fetch(v51Endpoint('/api/ai/task-status?id='+encodeURIComponent(taskId)),{credentials:'omit',cache:'no-store'});
+  if(!r.ok)throw Error('任务查询 HTTP '+r.status);
+  const data=await r.json();
+  if(data.status==='failed')throw Error(data.error||'AI 任务失败');
+  if(data.status==='completed')return data;
+  if(!['queued','processing','pending'].includes(data.status))throw Error('无法识别任务状态');
+  await new Promise(resolve=>setTimeout(resolve,1800));
+ }
+ throw Error('AI 任务仍在运行；本次页面未收到完成结果，请稍后重试或查询后端记录');
+}
+async function v51Execute(p,action,skipRender=false){
+ if(!p.file)throw Error('商品未关联独立原图');
+ if(!p.ean&&!p.sku)throw Error('商品缺少可靠条码或货号');
+ if(action==='enhance'&&!p.cutout)throw Error('需要先完成抠图');
+ if(action==='risk'&&!p.enhanced)throw Error('需要先完成美化');
+ p.approved=false;p.risk='unknown';p.flags=[];p.message='处理中';
+ if(!skipRender)v51Render();
+ try{
+  let data;
+  if(action==='extract'){
+   // 将原图作为 base64 数据发到自有服务器，避免使用浏览器 blob URL
+   const raw=await new Promise((resolve,reject)=>{
+    const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('读取图片失败'));reader.readAsDataURL(p.file);
+   });
+   data=await v51Call('/api/ai/extract-subject',{
+    product_code:p.ean||p.sku,original_image_data_url:raw,
+    preserve_spec:true,profile:'dld_bazar_standard_v1'});
+  }else if(action==='enhance'){
+   data=await v51Call('/api/ai/enhance-product',{
+    product_code:p.ean||p.sku,source_image_url:p.cutout,
+    width:1254,height:1254,format:'jpg',background:'white',preserve_spec:true});
+  }else{
+   data=await v51Call('/api/ai/check-spec-risk',{
+    product_code:p.ean||p.sku,original_image_source:'original-upload',
+    enhanced_image_url:p.enhanced,product_name:p.name,
+    preserve_dimensions:true,preserve_capacity:true,preserve_quantity:true});
+  }
+  if(data.task_id&&data.status!=='completed')data=await v51Poll(data.task_id);
+  if(action==='extract'){
+   p.cutout=v51GuardImage(data.image_url);p.enhanced='';p.stage='cutout_completed';
+  }else if(action==='enhance'){
+   p.enhanced=v51GuardImage(data.image_url);p.stage='enhanced_completed';
+  }else{
+   p.risk=String(data.risk_level||'unknown');
+   p.flags=Array.isArray(data.flags)?data.flags:[];
+   p.stage=p.risk==='low'&&p.flags.length===0?'awaiting_manual_review':'blocked_risk';
+  }
+  p.message='接口返回成功；仍须人工核对真实性。';
+ }catch(err){p.message='未通过：'+(err.message||String(err));p.stage='failed';if(action==='extract')p.cutout='';if(action==='enhance')p.enhanced='';if(action==='risk')p.risk='unknown';}
+ if(!skipRender)v51Render();
+}
+async function v51Batch(action){
+ if(v51.running)return;
+ const eligible=v51.items.filter(p=>p.file&&(action==='extract'||action==='enhance'&&p.cutout||action==='risk'&&p.enhanced));
+ if(!eligible.length){v51Say('没有可以执行此步骤的商品；先导入发票和独立图片。');return}
+ v51.running=true;
+ for(let i=0;i<eligible.length;i++){v51Say(`${action}：正在处理 ${i+1}/${eligible.length}，条码 ${eligible[i].ean||eligible[i].sku}`);await v51Execute(eligible[i],action,true);v51Render()}
+ v51.running=false;v51Render();v51Say(`${action} 执行结束。实际成功 ${eligible.filter(p=>p.stage!=='failed').length}/${eligible.length}；失败或风险未通过的商品不会进入导出。`);
+}
+async function v51Export(){
+ // 安全上只导出已确认 AI 美化图与审核清单；不生成 products.csv
+ const valid=v51.items.filter(p=>p.approved&&p.chosen==='enhanced'&&p.risk==='low'&&p.flags.length===0&&p.enhanced&&p.file);
+ if(!valid.length){v51Say('没有合格已人工确认的图片；拒绝导出。');return}
+ const seen=new Set(),files=[],rows=[['条码','SKU','法语名称','图片','AI风险','人工确认']];
+ for(const p of valid){
+  const key=(p.ean||p.sku).replace(/\D/g,'');
+  if(!key||seen.has(key)){v51Say('检测到编码为空或同批重复；拒绝导出。');return}
+  seen.add(key);
+  try{
+   const resp=await fetch(p.enhanced,{credentials:'omit'});
+   if(!resp.ok)throw Error('图片下载 HTTP '+resp.status);
+   const blob=await resp.blob();if(!blob.type.startsWith('image/'))throw Error('后端返回了非图片内容');
+   // 不能伪装格式为 JPEG，必须检测实际文件头
+   const buf=new Uint8Array(await blob.arrayBuffer());
+   if(buf.length<100||buf[0]!==255||buf[1]!==216||buf[2]!==255)throw Error('不是实际 JPG 图片');
+   files.push({name:'images/'+key+'.jpg',data:buf});
+   rows.push([p.ean,p.sku,p.name,'images/'+key+'.jpg','low','是']);
+  }catch(e){v51Say('图片导出失败（'+key+'）：'+e.message);return}
+ }
+ const csv='\uFEFF'+rows.map(line=>line.map(x=>'"'+String(x||'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ files.push({name:'image_review.csv',data:new TextEncoder().encode(csv)});
+ files.push({name:'README_仅图片审核非商城发布.txt',data:new TextEncoder().encode('AI图像审核导出，非FORTE products.csv。发布前仍需商城实时及服务器二次查重、完整13列CSV、图片规格复检。complete=false')});
+ const z=zipStore(files),u=URL.createObjectURL(z),a=document.createElement('a');
+ a.href=u;a.download='DLD_BAZAR_V5_1_AI审核图片_'+valid.length+'款_非发布.zip';document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(u),30000);
+ v51Say('已导出 '+valid.length+' 款已确认图片审核 ZIP；未生成 products.csv，未发布商品。');
+}
+</script>
+</body></html>
