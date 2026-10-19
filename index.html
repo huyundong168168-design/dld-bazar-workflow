@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DLD BAZAR 自动上架工作台</title>
-<style>body{margin:0;background:#f2f5fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#152238}header{background:#123b85;color:#fff;padding:30px 20px}h1{font-size:24px;margin:0 0 8px}main{padding:18px}.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 2px 10px #0001}button{background:#1769e0;color:#fff;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:10px 0}small{color:#667085}.result{white-space:pre-line;overflow-wrap:anywhere;line-height:1.65}.photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-top:12px}.photo-item{border:1px solid #ddd;padding:10px;border-radius:10px;min-width:0}.photo-item img{width:100%;aspect-ratio:1;object-fit:contain;background:white}.photo-item p{font-size:13px;overflow-wrap:anywhere}.photo-item label{font-size:13px}.danger{color:#ad3b26}.ok{color:#186b35}.subbutton{margin-top:10px;background:#34495e}button:disabled{opacity:.45}input[type=file]{font-size:14px}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · 图片处理隔离测试版</div></header><main>
+<style>body{margin:0;background:#f2f5fa;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#152238}header{background:#123b85;color:#fff;padding:30px 20px}h1{font-size:24px;margin:0 0 8px}main{padding:18px}.card{background:white;border-radius:16px;padding:20px;margin-bottom:15px;box-shadow:0 2px 10px #0001}button{background:#1769e0;color:#fff;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:10px 0}small{color:#667085}.result{white-space:pre-line;overflow-wrap:anywhere;line-height:1.65}.photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-top:12px}.photo-item{border:1px solid #ddd;padding:10px;border-radius:10px;min-width:0}.photo-item img{width:100%;aspect-ratio:1;object-fit:contain;background:white}.photo-item p{font-size:13px;overflow-wrap:anywhere}.photo-item label{font-size:13px}.photo-item button{margin-top:9px}.photo-item .ai-note{color:#34495e;font-size:13px;background:#f0f5ff;padding:9px;border-radius:7px}.photo-item input[type=range]{width:100%}.danger{color:#ad3b26}.ok{color:#186b35}.subbutton{margin-top:10px;background:#34495e}button:disabled{opacity:.45}input[type=file]{font-size:14px}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · P1＋P2 AI 主体提取与商城图美化隔离测试版</div></header><main>
 <div class="card"><h3>商品查询（商城实时接口）</h3><input id="sku" placeholder="输入 SKU 或条码"><button onclick="search()">查询商品</button><p id="result" class="result"></p></div>
 <div class="card"><h3>📦 GitHub 库存目录匹配及防重复</h3><small>库存目录为2026-10-18公开快照，不含实时库存；已上架目录为旧快照，重复识别仅供预检，不能替代商城服务器端查重。</small><input id="inventoryQuery" placeholder="输入条码或 SKU"><button onclick="checkInventoryAndDuplicate()">查询两份 GitHub CSV</button><p id="inventoryResult" class="result"></p></div>
-<div class="card"><h3>📷 商品图片自动处理（本地隔离测试）</h3><p><small>一次最多25张 JPG / PNG / WEBP；优先使用可靠条码或 SKU 才能自动匹配，例如 8052533410179.jpg；IMG_2959.png 等手机默认文件名需要人工核对后重新命名。可手动选择商品区域，自动缩放为1000×1000白底 JPEG（不抠图、不生成新商品内容）。匹配后仍需逐张人工确认。所有处理在浏览器本地执行，禁止自动发布。</small></p>
-<input id="photoFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple aria-label="选择待处理的商品图片"><button onclick="processImages()">识别并处理图片（最多25张）</button><p id="photoStatus" class="result" aria-live="polite"></p><div id="photoGrid" class="photo-grid"></div><button id="exportPhotos" class="subbutton" onclick="exportPhotoZip()" disabled>导出已确认图片 ZIP＋审核清单</button></div>
-<div class="card"><h3>🚀 自动上架</h3><button onclick="alert('安全测试模式：尚未连接发布接口')">模拟测试</button></div><div class="card"><h3>🔒 系统状态</h3><p>只读测试模式 · 无发布接口 · 无远程图片写入</p><small>不会修改商品、价格或库存；导出的图片 ZIP 需再进入独立审核流程。</small></div>
+<div class="card"><h3>📷 商品图片自动处理（本地隔离测试）</h3><p><small>P1＋P2隔离测试：建议首次只用1张真实商品图片；一次最多25张 JPG / PNG / WEBP；优先使用可靠条码或 SKU 才能自动匹配，例如 8052533410179.jpg；IMG_2959.png 等手机默认文件名需要人工核对后重新命名。可先手动选择商品区域，再执行浏览器端 AI 去背景；只有模型成功才标记已抠图。人工可调光线和饱和度，输出1254×1254白底 JPG（不虚构商品内容）。匹配后仍需逐张人工确认。所有处理在浏览器本地执行，禁止自动发布。</small></p>
+<input id="photoFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple aria-label="选择待处理的商品图片"><button onclick="processImages()">识别并处理图片（最多25张）</button><p id="photoStatus" class="result" aria-live="polite"></p><div id="photoGrid" class="photo-grid"></div><button id="exportPhotos" class="subbutton" onclick="exportPhotoZip()" disabled>导出AI处理且人工确认图片 ZIP＋审核清单</button></div>
+<div class="card"><h3>🚀 自动上架</h3><button onclick="alert('安全测试模式：尚未连接发布接口')">模拟测试</button></div><div class="card"><h3>🔒 系统状态</h3><p>P1＋P2 测试模式 · 无发布接口 · 无远程图片写入</p><small>不会修改商品、价格或库存；导出的图片 ZIP 需再进入独立审核流程。</small></div>
 </main><script>
 const INVENTORY_CSV='./DLD_BAZAR_65535_%25E5%2585%25AC%25E5%25BC%2580%25E5%2595%2586%25E5%2593%2581%25E7%259B%25AE%25E5%25BD%2595_%25E4%25B8%258D%25E5%2590%25AB%25E5%25BA%2593%25E5%AD%2598_20261018.csv';
 function parseCsv(text,delimiter){const rows=[];let row=[],f='',q=false;text=text.replace(/^\uFEFF/,'');for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(q&&text[i+1]==='"'){f+='"';i++;}else q=!q;}else if(c===delimiter&&!q){row.push(f);f='';}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&text[i+1]==='\n')i++;row.push(f);f='';if(row.some(x=>x.length))rows.push(row);row=[];}else f+=c;}if(f||row.length){row.push(f);rows.push(row);}return rows;}
@@ -51,15 +51,37 @@ const processedPhotos=[];
 function fileStem(name){return name.replace(/\.[^.]+$/,'').trim()}
 function safeName(name){return name.replace(/[^A-Za-z0-9_-]/g,'_').slice(0,80)}
 function imageFromFile(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('图片解码失败'))};img.src=url})}
-async function formatPhoto(file, crop){
- const img=await imageFromFile(file),canvas=document.createElement('canvas');canvas.width=1000;canvas.height=1000;
- const ctx=canvas.getContext('2d');if(!ctx)throw Error('浏览器无法处理画布');ctx.fillStyle='#fff';ctx.fillRect(0,0,1000,1000);
- const r=crop||{x:0,y:0,w:1,h:1};const sx=Math.round(img.naturalWidth*r.x),sy=Math.round(img.naturalHeight*r.y);
+async function cropToPng(file,crop){
+ const img=await imageFromFile(file),r=crop||{x:0,y:0,w:1,h:1};
+ const sx=Math.round(img.naturalWidth*r.x),sy=Math.round(img.naturalHeight*r.y);
  const sw=Math.max(1,Math.min(img.naturalWidth-sx,Math.round(img.naturalWidth*r.w)));
  const sh=Math.max(1,Math.min(img.naturalHeight-sy,Math.round(img.naturalHeight*r.h)));
- const scale=Math.min(900/sw,900/sh),w=Math.max(1,Math.round(sw*scale)),h=Math.max(1,Math.round(sh*scale));
- ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sh,(1000-w)/2,(1000-h)/2,w,h);
- return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('JPEG转换失败')),'image/jpeg',0.9));
+ const canvas=document.createElement('canvas');canvas.width=sw;canvas.height=sh;
+ const ctx=canvas.getContext('2d');ctx.drawImage(img,sx,sy,sw,sh,0,0,sw,sh);
+ return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('裁剪图片失败')),'image/png'));
+}
+async function formatPhoto(file,crop,foreground=null,adjust={brightness:100,contrast:100,saturation:100}){
+ const source=foreground||await cropToPng(file,crop);
+ const img=await imageFromFile(source),canvas=document.createElement('canvas');canvas.width=1254;canvas.height=1254;
+ const ctx=canvas.getContext('2d');if(!ctx)throw Error('浏览器无法处理画布');
+ ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1254,1254);
+ const scale=Math.min(1100/img.naturalWidth,1100/img.naturalHeight);
+ const w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ const b=Math.max(85,Math.min(115,Number(adjust.brightness)||100)),c=Math.max(85,Math.min(115,Number(adjust.contrast)||100)),sat=Math.max(85,Math.min(115,Number(adjust.saturation)||100));
+ ctx.filter='brightness('+b+'%) contrast('+c+'%) saturate('+sat+'%)';
+ ctx.drawImage(img,Math.round((1254-w)/2),Math.round((1254-h)/2),w,h);ctx.filter='none';
+ return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('JPEG转换失败')),'image/jpeg',0.93));
+}
+let aiRemoveBackground=null;
+async function loadAiRemoval(){
+ if(!aiRemoveBackground){
+  aiRemoveBackground=import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm').then(mod=>{
+   const fn=mod.default||mod.removeBackground;
+   if(typeof fn!=='function')throw Error('AI 模块加载异常');return fn;
+  }).catch(e=>{aiRemoveBackground=null;throw e});
+ }
+ return aiRemoveBackground;
 }
 async function detectBarcode(file){
  if(typeof BarcodeDetector==='undefined')return {value:'',hint:'此浏览器不支持条码自动识别，请手动输入编码'};
@@ -72,11 +94,15 @@ async function detectBarcode(file){
  }catch(e){return {value:'',hint:'扫描不可用，请手动输入编码'};}
 }
 function normalizedCrop(p){let x=Math.max(0,Math.min(.95,p.x)),y=Math.max(0,Math.min(.95,p.y));return {x,y,w:Math.max(.05,Math.min(1-x,p.w)),h:Math.max(.05,Math.min(1-y,p.h))}}
-async function updateImageFile(item){if(item.blobUrl)URL.revokeObjectURL(item.blobUrl);item.blob=await formatPhoto(item.file,normalizedCrop(item.crop));item.blobUrl=URL.createObjectURL(item.blob);item.url=item.blobUrl;item.approved=false;}
+async function updateImageFile(item){
+ const blob=await formatPhoto(item.file,normalizedCrop(item.crop),item.aiForeground,item.adjust);
+ if(item.blobUrl)URL.revokeObjectURL(item.blobUrl);
+ item.blob=blob;item.blobUrl=URL.createObjectURL(blob);item.url=item.blobUrl;item.approved=false;
+}
 function rowMatch(name,data){const term=fileStem(name);const isNumeric=/^\d+$/.test(term);const stock=data.inventory.filter(r=>r[0]&&(isNumeric?codeKey(r[0])===codeKey(term):skuKey(r[0])===skuKey(term)));const listed=data.uploaded.filter(r=>(r[6]&&isNumeric&&codeKey(r[6])===codeKey(term))||(r[0]&&skuKey(r[0])===skuKey(term)));let possibleCode='';let productName='';if(stock.length===1){possibleCode=stock[0][0];productName=stock[0][1]||'';}else if(stock.length===0&&listed.length===1){possibleCode=listed[0][6]||listed[0][0];productName=listed[0][1]||'';}const ambiguous=stock.length>1||listed.length>1||(stock.length===1&&listed.length===1&&listed[0][6]&&codeKey(listed[0][6])!==codeKey(stock[0][0]));const matched=!ambiguous&&(stock.length===1||listed.length===1);return {term,stock,listed,possibleCode,productName,matched,ambiguous}}
 function makeItemUI(item,index){
  const root=document.createElement('div');root.className='photo-item';root.style.minWidth='100%';
- const img=document.createElement('img');img.alt='裁剪结果：'+item.name;img.src=item.url;img.style.maxHeight='330px';root.append(img);
+ const img=document.createElement('img');img.alt='处理后商品图预览：'+item.name;img.src=item.url;img.style.maxHeight='330px';root.append(img);
  const title=document.createElement('p');title.textContent='原文件：'+item.name;root.append(title);
  const hint=document.createElement('p');hint.textContent=item.detectHint||'';root.append(hint);
  const correction=document.createElement('input');correction.placeholder='人工输入条码或 SKU';correction.value=item.match.term||'';
@@ -84,33 +110,68 @@ function makeItemUI(item,index){
  const matchBtn=document.createElement('button');matchBtn.textContent='重新匹配编码';root.append(matchBtn);
  const info=document.createElement('p');root.append(info);
  const dup=document.createElement('p');root.append(dup);
- function updateMatchInfo(){info.textContent=item.error?'处理错误：'+item.error:item.match.matched?'候选：'+item.match.possibleCode+' / '+item.match.productName:'无法唯一匹配，禁止确认';
- dup.textContent=item.match.listed.length?'旧已上架目录中存在疑似相同商品；不得自动新增':'旧目录未匹配，不能证明商城不存在';
- checkbox.disabled=!!item.error||!item.match.matched;checkbox.checked=item.approved;}
- matchBtn.addEventListener('click',()=>{
-   item.approved=false; const term=correction.value.trim();item.match=term?rowMatch(term+'.jpg',item.catalogs):{term:'',stock:[],listed:[],matched:false};
-   updateMatchInfo();refreshPhotoStatus();
- });
- const cropTitle=document.createElement('p');cropTitle.textContent='截图裁剪：调整商品区域，排除状态栏、文字和其他商品';root.append(cropTitle);
- const bounds=[['左边界', 'x'],['上边界','y'],['右边界','right'],['下边界','bottom']];
- const fields={};for(const [label,key] of bounds){const wrap=document.createElement('label');wrap.textContent=label+'（%）';wrap.style.display='block';
- const input=document.createElement('input');input.type='range';input.min=0;input.max=95;input.step=1;
- input.value=key==='x'?0:key==='y'?0:95;input.style.width='100%';wrap.append(input);root.append(wrap);fields[key]=input;}
- const cropButton=document.createElement('button');cropButton.textContent='应用裁剪并刷新白底图';root.append(cropButton);
- cropButton.addEventListener('click',async()=>{
- const x=+fields.x.value/100,y=+fields.y.value/100,right=+fields.right.value/100,bottom=+fields.bottom.value/100;
- if(right<=x||bottom<=y){hint.textContent='裁剪边界无效：右边界必须大于左边界、下边界必须大于上边界';return;}
- item.crop={x,y,w:right-x,h:bottom-y};cropButton.disabled=true;
- try{await updateImageFile(item);img.src=item.url;hint.textContent='已重新裁剪；请再次核对图片与编码';}catch(e){item.error=e.message;hint.textContent='裁剪失败：'+e.message;}
- cropButton.disabled=false;updateMatchInfo();refreshPhotoStatus();
- });
+ const status=document.createElement('p');status.className='ai-note';status.textContent='AI 抠图尚未执行；当前仅为白底裁剪预览。';root.append(status);
  const label=document.createElement('label');label.style.display='block';label.style.marginTop='12px';
  const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.style.width='auto';
  checkbox.addEventListener('change',()=>{item.approved=checkbox.checked;refreshPhotoStatus()});
- label.append(checkbox,document.createTextNode(' 已核对图片主体及编码一致（人工确认）'));root.append(label);
- updateMatchInfo();return root;
+ label.append(checkbox,document.createTextNode(' 已核对商品主体、AI 边缘和编码一致（人工确认）'));
+ function updateMatchInfo(){
+  info.textContent=item.error?'处理错误：'+item.error:item.match.matched?'候选：'+item.match.possibleCode+' / '+item.match.productName:'无法唯一匹配，禁止确认';
+  dup.textContent=item.match.listed?.length?'旧已上架目录中存在疑似相同商品；不得自动新增':'旧目录未匹配，不能证明商城不存在';
+  checkbox.disabled=!!item.error||!item.match.matched||!item.aiForeground;checkbox.checked=item.approved;
+ }
+ matchBtn.addEventListener('click',()=>{
+  item.approved=false;const term=correction.value.trim();
+  item.match=term?rowMatch(term+'.jpg',item.catalogs):{term:'',stock:[],listed:[],matched:false,listed:[]};
+  updateMatchInfo();refreshPhotoStatus();
+ });
+ const cropTitle=document.createElement('p');cropTitle.textContent='P1 裁剪来源区域：四个边界只保留真实商品';root.append(cropTitle);
+ const bounds=[['左边界','x'],['上边界','y'],['右边界','right'],['下边界','bottom']];
+ const fields={};for(const [name,key] of bounds){
+  const wrap=document.createElement('label');wrap.textContent=name+'（%）';wrap.style.display='block';
+  const input=document.createElement('input');input.type='range';input.min=0;input.max=100;input.step=1;
+  input.value=key==='x'||key==='y'?0:100;wrap.append(input);root.append(wrap);fields[key]=input;
+ }
+ const cropButton=document.createElement('button');cropButton.textContent='应用裁剪（重置 AI 抠图结果）';root.append(cropButton);
+ cropButton.addEventListener('click',async()=>{
+  const x=+fields.x.value/100,y=+fields.y.value/100,right=+fields.right.value/100,bottom=+fields.bottom.value/100;
+  if(right<=x||bottom<=y){status.textContent='裁剪范围无效，请检查左右和上下边界';return;}
+  item.crop={x,y,w:right-x,h:bottom-y};item.aiForeground=null;item.approved=false;cropButton.disabled=true;
+  try{await updateImageFile(item);img.src=item.url;status.textContent='裁剪已更新，请重新执行 AI 去背景。';}
+  catch(e){item.error=e.message;status.textContent='裁剪失败：'+e.message;}
+  finally{cropButton.disabled=false;updateMatchInfo();refreshPhotoStatus();}
+ });
+ const aiButton=document.createElement('button');aiButton.textContent='P1 AI 提取商品主体并去背景';root.append(aiButton);
+ aiButton.addEventListener('click',async()=>{
+  if(item.error){status.textContent='图片存在处理错误，不能执行 AI';return;}
+  aiButton.disabled=true;item.approved=false;item.aiForeground=null;updateMatchInfo();refreshPhotoStatus();
+  status.textContent='正在加载 AI 模型并处理（首次可能下载较大模型，请保持页面开启）……';
+  try{
+   const remove=await loadAiRemoval();const cropped=await cropToPng(item.file,normalizedCrop(item.crop));
+   const transparent=await remove(cropped,{device:'cpu',model:'isnet_quint8',output:{format:'image/png',type:'foreground'}});
+   if(!(transparent instanceof Blob)||transparent.size<200)throw Error('AI 返回图片无效');
+   item.aiForeground=transparent;await updateImageFile(item);img.src=item.url;
+   status.textContent='AI 前景提取完成（模型已运行）。请人工检查是否遗漏商品、是否保留背景残影。';
+  }catch(e){item.aiForeground=null;status.textContent='AI 抠图失败：'+(e?.message||e)+'。当前照片不能作为已抠图商品图导出。';}
+  finally{aiButton.disabled=false;updateMatchInfo();refreshPhotoStatus();}
+ });
+ const enhancements=document.createElement('div');enhancements.innerHTML='<p><strong>P2 光线优化</strong>（保持商品外观真实）</p>';root.append(enhancements);
+ for(const [name,key] of [['亮度','brightness'],['对比度','contrast'],['饱和度','saturation']]){
+  const wrap=document.createElement('label');wrap.style.display='block';wrap.textContent=name+' '+item.adjust[key]+'%';
+  const slider=document.createElement('input');slider.type='range';slider.min=85;slider.max=115;slider.step=1;slider.value=item.adjust[key];
+  slider.addEventListener('input',()=>{item.adjust[key]=+slider.value;wrap.firstChild.textContent=name+' '+slider.value+'%';});
+  wrap.append(slider);enhancements.append(wrap);
+ }
+ const enhanceButton=document.createElement('button');enhanceButton.textContent='P2 应用光线优化并刷新白底主图';root.append(enhanceButton);
+ enhanceButton.addEventListener('click',async()=>{
+  enhanceButton.disabled=true;
+  try{await updateImageFile(item);img.src=item.url;status.textContent=item.aiForeground?'AI 抠图已保留，1254×1254 白底主图已更新；请重新人工确认。':'仅完成白底和光线优化，AI 抠图尚未成功。';}
+  catch(e){item.error=e.message;status.textContent='光线优化失败：'+e.message;}
+  finally{enhanceButton.disabled=false;updateMatchInfo();refreshPhotoStatus();}
+ });
+ root.append(label);updateMatchInfo();return root;
 }
-function refreshPhotoStatus(){const ok=processedPhotos.filter(x=>x.approved).length;document.getElementById('photoStatus').textContent='已处理 '+processedPhotos.length+' 张；人工确认 '+ok+' 张；其余待审核。任何已上架疑似重复商品均不得自动新增。';document.getElementById('exportPhotos').disabled=ok===0}
+function refreshPhotoStatus(){const ok=processedPhotos.filter(x=>x.approved&&x.blob&&x.aiForeground&&x.match.matched).length;document.getElementById('photoStatus').textContent='已处理 '+processedPhotos.length+' 张；AI去背景并人工确认 '+ok+' 张；其余待审核。任何已上架疑似重复商品均不得自动新增。';document.getElementById('exportPhotos').disabled=ok===0}
 async function processImages(){
  const files=Array.from(document.getElementById('photoFiles').files||[]),out=document.getElementById('photoStatus'),grid=document.getElementById('photoGrid');
  if(!files.length){out.textContent='请先选择商品图片';return}if(files.length>25){out.textContent='每批最多25张';return}
@@ -119,7 +180,7 @@ async function processImages(){
  processedPhotos.length=0;grid.replaceChildren();out.textContent='正在读取目录并处理图片……';
  let data;try{data=await catalogs()}catch(e){out.textContent='目录读取失败：'+e.message+'。停止本批处理。';return}
  for(const file of files){
-  const item={file,name:file.name,catalogs:data,crop:{x:0,y:0,w:1,h:1},match:rowMatch(file.name,data),approved:false,error:'',blob:null,url:'',blobUrl:'',originalUrl:'',detectHint:''};
+  const item={file,name:file.name,catalogs:data,crop:{x:0,y:0,w:1,h:1},match:rowMatch(file.name,data),aiForeground:null,adjust:{brightness:100,contrast:100,saturation:100},approved:false,error:'',blob:null,url:'',blobUrl:'',originalUrl:'',detectHint:''};
   if(!/^image\/(jpeg|png|webp)$/.test(file.type))item.error='仅支持 JPG / PNG / WEBP';
   else if(file.size>20*1024*1024)item.error='单张文件超过20MB';
   if(!item.error){
@@ -138,5 +199,5 @@ async function processImages(){
 }
 function crc32(bytes){let crc=0xffffffff;for(const b of bytes){crc^=b;for(let i=0;i<8;i++)crc=(crc>>>1)^((crc&1)?0xedb88320:0)}return(crc^0xffffffff)>>>0}
 function zipStore(files){const enc=new TextEncoder(),chunks=[],central=[];let offset=0;const u16=(v)=>[v&255,(v>>>8)&255],u32=(v)=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255];for(const item of files){const name=enc.encode(item.name),data=item.data,crc=crc32(data),len=data.length;const header=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x800),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(len),...u32(len),...u16(name.length),...u16(0)]);chunks.push(header,name,data);central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x800),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(len),...u32(len),...u16(name.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset)]),name);offset+=header.length+name.length+len}const size=central.reduce((n,c)=>n+c.length,0);chunks.push(...central,new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(size),...u32(offset),...u16(0)]));return new Blob(chunks,{type:'application/zip'})}
-async function exportPhotoZip(){const list=processedPhotos.filter(x=>x.approved&&x.blob);if(!list.length)return;const enc=new TextEncoder(),files=[],lines=['"原始文件名";"识别编码";"法语名称";"图片文件";"旧目录疑似重复";"人工审核状态"'];let seq=0;for(const p of list){const name=safeName(p.match.possibleCode)+'_'+String(++seq).padStart(2,'0')+'.jpg';files.push({name:'images/'+name,data:new Uint8Array(await p.blob.arrayBuffer())});const cols=[p.name,p.match.possibleCode,p.match.productName,'images/'+name,p.match.listed.length?'是':'未知','已人工确认图片'];lines.push(cols.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'))}files.push({name:'image_review.csv',data:enc.encode('\uFEFF'+lines.join('\r\n'))});const zip=zipStore(files),url=URL.createObjectURL(zip),a=document.createElement('a');a.href=url;a.download='DLD_BAZAR_图片审核_'+list.length+'款.zip';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+async function exportPhotoZip(){const list=processedPhotos.filter(x=>x.approved&&x.blob&&x.aiForeground&&x.match.matched);if(!list.length)return;const enc=new TextEncoder(),files=[],lines=['"原始文件名";"识别编码";"法语名称";"图片文件";"旧目录疑似重复";"人工审核状态"'];let seq=0;for(const p of list){const name=safeName(p.match.possibleCode)+'.jpg';seq++;files.push({name:'images/'+name,data:new Uint8Array(await p.blob.arrayBuffer())});const cols=[p.name,p.match.possibleCode,p.match.productName,'images/'+name,p.match.listed.length?'是':'未知','已人工确认且AI去背景'];lines.push(cols.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'))}files.push({name:'image_review.csv',data:enc.encode('\uFEFF'+lines.join('\r\n'))});const zip=zipStore(files),url=URL.createObjectURL(zip),a=document.createElement('a');a.href=url;a.download='DLD_BAZAR_图片审核_'+list.length+'款.zip';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
 </script></body></html>
