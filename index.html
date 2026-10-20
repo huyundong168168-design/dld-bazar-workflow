@@ -767,8 +767,19 @@ v4Edit=function(i,field,val){b4OriginalEdit(i,field,val);if(['price','fr'].inclu
 
     for (let i = start + 1; i < matrix.length; i++) {
       const row = matrix[i];
-if (/^(TOT|TOTALE|TOTAL)$/i.test(String(row[sc] ?? '').trim()) && !String(row[ec] ?? '').trim()) break;
-      if (columns(row)) continue;
+      
+// 遇到商品数量合计行，结束商品区读取
+const article = String(row[sc] ?? '').trim().toUpperCase();
+const barcode = String(row[ec] ?? '').trim();
+
+if (
+  ['TOT', 'TOTALE', 'TOTAL'].includes(article) &&
+  barcode === ''
+) {
+  break;
+}
+
+if (columns(row)) continue;
       const ean = String(row[ec] ?? '').trim();
       const sku = String(row[sc] ?? '').trim();
       const name = String(row[nc] ?? '').trim();
