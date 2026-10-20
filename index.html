@@ -23,10 +23,14 @@
 .v51 .pill{display:inline-block;background:#e9eff8;padding:4px 8px;border-radius:30px;font-size:12px}
 @media(max-width:560px){.v51 .panel{padding:12px}.v51 .triptych img{height:80px}}
 </style>
-</head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B2｜统一保护门禁与 AI 图片审核</div></header><section class="v4" id="workflow-v4">
-<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 B2 版</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
+<style id="v4-paste-styles">.v4paste{margin-top:14px;border:1px solid #afc5e5;border-radius:12px;padding:13px;background:#f6f9ff}.v4paste-title{font-weight:700;margin-bottom:7px}.v4paste textarea{width:100%;box-sizing:border-box;min-height:145px;padding:12px;border:1px solid #b4c4d9;border-radius:9px;font:14px/1.6 ui-monospace,monospace;resize:vertical;background:#fff;color:#14253a}.v4paste-controls{display:flex;flex-wrap:wrap;gap:6px}.v4paste-controls button{width:auto!important;margin:0!important}.v4paste #v4PasteStatus{margin-top:8px;white-space:pre-wrap}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B3｜粘贴导入＋统一保护门禁与 AI 图片审核</div></header><section class="v4" id="workflow-v4">
+<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 B3 版</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
 <div class="steps"><div class="step">① 发票导入</div><div class="step">② 图片来源</div><div class="step">③ 防重复</div><div class="step">④ 图片审核</div><div class="step">⑤ 整批确认</div><div class="step">⑥ FORTE 分包</div></div>
-<div class="panel"><h3>① 整张发票导入 · 不限25款</h3><label class="drop">选择发票（XLSX/XLS/CSV），一次导入所有商品<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button class="vbutton" id="v4Load" onclick="v4LoadInvoice()">读取整张发票</button><div class="status" id="v4InvoiceStatus">等待上传。XLSX 解析首次需要加载 SheetJS，断网时可改用 CSV。</div></div>
+<div class="panel"><h3>① 整张发票导入 · 不限25款</h3><label class="drop">选择发票（XLSX/XLS/CSV），一次导入所有商品<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button class="vbutton" id="v4Load" onclick="v4LoadInvoice()">读取整张发票</button><div class="v4paste" id="v4PasteArea"><div class="v4paste-title">📋 新增：粘贴发票数据 / 文件</div>
+<p class="muted">可直接粘贴 Excel 复制的整块表格（含表头 EAN、Codice articolo、Descrizione、Q.tà），或 CSV/TSV 文本；支持几百行。不会把文本发送到外部服务。</p>
+<textarea id="v4PasteInput" rows="6" spellcheck="false" autocomplete="off" placeholder="在 Excel 里复制包含表头的整张商品表，再长按这里 → 粘贴。也可粘贴 CSV/TSV 内容。"></textarea>
+<div class="v4paste-controls"><button type="button" class="vbutton secondary" onclick="v4ReadClipboard()">从剪贴板粘贴</button><button type="button" class="vbutton" onclick="v4LoadPaste()">读取粘贴数据</button><button type="button" class="vbutton secondary" onclick="v4PasteClear()">清空</button></div>
+<div class="muted" id="v4PasteStatus" aria-live="polite">iPhone 可以长按文本框选择“粘贴”；如果复制的是 Excel 文件而非表格内容，请仍使用上方“选取文件”。</div></div><div class="status" id="v4InvoiceStatus">等待上传。XLSX 解析首次需要加载 SheetJS，断网时可改用 CSV。</div></div>
 <div class="panel"><h3>② 图片来源与匹配</h3><label class="drop">选择商品原图（JPG、PNG、WEBP；文件名建议使用真实 EAN / 货号）<input id="v4Images" type="file" multiple accept="image/jpeg,image/png,image/webp"></label><label class="drop">参考目录 PDF（允许多份；预览定位用途，整页不得直接当正式商品图）<input id="v4Pdfs" type="file" accept="application/pdf,.pdf" multiple></label><button class="vbutton secondary" onclick="v4AttachImages()">导入并按编码匹配图片</button><div class="status" id="v4ImageStatus">等待商品图片。PDF 可作为人工参考来源，不会自动伪装成白底图。</div></div>
 <div class="panel"><h3>③ 全量库存与商城防重复</h3><button class="vbutton" id="v4Snapshot" onclick="v4CheckSnapshots()">运行两份 GitHub 历史目录预检</button><button class="vbutton secondary" onclick="v4TryLive()">检查商城实时 API 连通性</button><div class="alert">安全门禁：历史目录未命中 ≠ 新品。浏览器的实时查询结果不能替代服务器发布前二次查重。实时查询失败时禁止正式发布。</div><div class="status" id="v4DupStatus">尚未运行；默认全部禁止发布。</div></div>
 <div class="panel"><h3>④ + ⑤ 全批商品审核</h3><div class="stats"><div class="stat"><b id="v4Total">0</b><small>发票商品</small></div><div class="stat"><b id="v4Existing">0</b><small>历史目录命中</small></div><div class="stat"><b id="v4HasImage">0</b><small>原图已关联</small></div><div class="stat"><b id="v4Approved">0</b><small>人工审核确认</small></div></div><p class="muted">支持单款销售价、法语名称检查。若商品已存在，不允许添加为新品。图片仅执行非生成式白底规范化，不能冒充 AI 抠图。</p><div class="scroll"><table><thead><tr><th>行</th><th>条码/EAN</th><th>货号</th><th>原商品名</th><th>法语名称</th><th>销售价 €</th><th>数量</th><th>匹配状态</th><th>图片</th><th>人工确认</th></tr></thead><tbody id="v4Rows"><tr><td colspan="10">先上传发票</td></tr></tbody></table></div></div>
@@ -545,4 +549,62 @@ function bDownload(){if(!bstate.results.length){bText('bMessage','没有保护�
 const bOriginalLoad=typeof v4LoadInvoice==='function'?v4LoadInvoice:null;
 if(bOriginalLoad){v4LoadInvoice=async function(){bFail('发票发生变化，请重新查重');await bOriginalLoad()}}
 
+</script><script id="v4-paste-module">
+'use strict';
+function v4PasteParse(text){
+ const t=String(text||'').replace(/^\uFEFF/,'').trim();
+ if(!t)throw Error('请先在输入框粘贴商品数据');
+ if(t.length>20000000)throw Error('粘贴文本过大，请使用文件上传');
+ const first=t.split(/\r?\n/,1)[0];
+ if(first.includes('\t'))return t.split(/\r?\n/).map(line=>line.replace(/\r$/,'').split('\t'));
+ const sep=first.includes(';')?';':',';
+ return parseCsv(t,sep);
+}
+function v4PasteResetProtection(){
+ if(typeof bFail==='function')bFail('已粘贴新发票：旧查重与 AI 审核全部失效，请重新检查');
+ if(typeof v51!=='undefined'){
+  for(const p of v51.items||[]){if(p.localUrl)URL.revokeObjectURL(p.localUrl)}
+  v51.items=[];if(typeof v51Render==='function')v51Render();
+ }
+ v4.imageUrls.forEach(u=>URL.revokeObjectURL(u));v4.imageUrls=[];
+ v4.pdfs=[];
+ v4.snapshotChecked=false;v4.liveResult='未检查';
+ v4Text('v4DupStatus','粘贴了新发票，必须重新检查商城防重复。');
+ v4Text('v4ImageStatus','商品已更换，原图关联需要重新执行。');
+}
+function v4LoadPaste(){
+ const st=document.getElementById('v4PasteStatus');
+ try{
+  const matrix=v4PasteParse(document.getElementById('v4PasteInput').value);
+  const parsed=v4InvoiceRows(matrix);
+  if(parsed.length===0)throw Error('没有识别到有效商品行，检查是否包含 EAN、货号、名称、数量和商品行号');
+  v4PasteResetProtection();
+  v4.rows=parsed;v4.source='粘贴内容（未验证原始文件）';
+  if(typeof bstate!=='undefined'){bstate.results=[];bstate.checked=false;bstate.queryCompleteness='none';bstate.queryError='';if(typeof bRender==='function')bRender()}
+  v4Render();
+  v4Text('v4InvoiceStatus',`已从粘贴内容导入 ${parsed.length} 款；价格不自动计算，查重需重新执行，正式发布仍锁定。`);
+  st.textContent=`成功：导入 ${parsed.length} 款。请前往第③步执行防重复核查。`;
+ }catch(e){st.textContent='读取失败：'+e.message}
+}
+function v4PasteClear(){document.getElementById('v4PasteInput').value='';document.getElementById('v4PasteStatus').textContent='已清空输入框。已经导入的商品不会被清除。'}
+async function v4ReadClipboard(){
+ const status=document.getElementById('v4PasteStatus');
+ if(!navigator.clipboard?.readText){status.textContent='该浏览器不允许按钮直接读取剪贴板。请长按下面文本框并选择“粘贴”。';return}
+ try{const text=await navigator.clipboard.readText();if(!text.trim())throw Error('剪贴板没有文本；文件仍需通过“选取文件”导入');document.getElementById('v4PasteInput').value=text;status.textContent=`已粘贴 ${text.length} 个字符。点击“读取粘贴数据”继续。`}
+ catch(e){status.textContent='无法读取剪贴板：'+e.message+'。请长按文本框选择“粘贴”。'}
+}
+(function(){
+ const box=document.getElementById('v4PasteInput');
+ if(!box)return;
+ box.addEventListener('paste',e=>{
+  const files=Array.from(e.clipboardData?.files||[]);
+  if(!files.length)return;
+  const f=files.find(file=>/\.(csv|txt|xlsx|xls)$/i.test(file.name||''));
+  if(!f)return;
+  if(typeof DataTransfer==='undefined')return;
+  const dt=new DataTransfer();dt.items.add(f);document.getElementById('v4Invoice').files=dt.files;
+  document.getElementById('v4PasteStatus').textContent='检测到粘贴的发票文件：'+f.name+'；请点击上方“读取整张发票”。';
+  e.preventDefault();
+ });
+})();
 </script></body></html>
