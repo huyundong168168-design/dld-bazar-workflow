@@ -746,9 +746,9 @@ v4Edit=function(i,field,val){b4OriginalEdit(i,field,val);if(['price','fr'].inclu
   function columns(row) {
     const aliases = [
       ['ean', 'ean13', 'barcode', 'codicebarra', 'codiceabarre', '条码'],
-      ['codicearticolo', 'codarticolo', 'appendice', 'sku', '货号'],
-      ['descrizione', 'description', 'libelle', '名称', '商品名称'],
-      ['qta', 'quantita', 'qty', 'quantity', '数量']
+      ['codicearticolo', 'codarticolo', 'appendice', 'art', 'sku', '货号'],
+      ['descrizione', 'localdescrizione', 'description', 'libelle', '名称', '商品名称'],
+      ['qta', 'quantita', 'qnt', 'qty', 'quantity', '数量']
     ];
     const headers = row.map(normalize);
     const found = aliases.map(list =>
