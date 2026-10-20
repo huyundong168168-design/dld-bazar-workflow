@@ -23,18 +23,20 @@
 .v51 .pill{display:inline-block;background:#e9eff8;padding:4px 8px;border-radius:30px;font-size:12px}
 @media(max-width:560px){.v51 .panel{padding:12px}.v51 .triptych img{height:80px}}
 </style>
-</head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · V5.1 AI 图片处理及人工审核</div></header><section class="v4" id="workflow-v4">
-<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 V5.1</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
+</head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B2｜统一保护门禁与 AI 图片审核</div></header><section class="v4" id="workflow-v4">
+<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 B2 版</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
 <div class="steps"><div class="step">① 发票导入</div><div class="step">② 图片来源</div><div class="step">③ 防重复</div><div class="step">④ 图片审核</div><div class="step">⑤ 整批确认</div><div class="step">⑥ FORTE 分包</div></div>
 <div class="panel"><h3>① 整张发票导入 · 不限25款</h3><label class="drop">选择发票（XLSX/XLS/CSV），一次导入所有商品<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button class="vbutton" id="v4Load" onclick="v4LoadInvoice()">读取整张发票</button><div class="status" id="v4InvoiceStatus">等待上传。XLSX 解析首次需要加载 SheetJS，断网时可改用 CSV。</div></div>
 <div class="panel"><h3>② 图片来源与匹配</h3><label class="drop">选择商品原图（JPG、PNG、WEBP；文件名建议使用真实 EAN / 货号）<input id="v4Images" type="file" multiple accept="image/jpeg,image/png,image/webp"></label><label class="drop">参考目录 PDF（允许多份；预览定位用途，整页不得直接当正式商品图）<input id="v4Pdfs" type="file" accept="application/pdf,.pdf" multiple></label><button class="vbutton secondary" onclick="v4AttachImages()">导入并按编码匹配图片</button><div class="status" id="v4ImageStatus">等待商品图片。PDF 可作为人工参考来源，不会自动伪装成白底图。</div></div>
 <div class="panel"><h3>③ 全量库存与商城防重复</h3><button class="vbutton" id="v4Snapshot" onclick="v4CheckSnapshots()">运行两份 GitHub 历史目录预检</button><button class="vbutton secondary" onclick="v4TryLive()">检查商城实时 API 连通性</button><div class="alert">安全门禁：历史目录未命中 ≠ 新品。浏览器的实时查询结果不能替代服务器发布前二次查重。实时查询失败时禁止正式发布。</div><div class="status" id="v4DupStatus">尚未运行；默认全部禁止发布。</div></div>
 <div class="panel"><h3>④ + ⑤ 全批商品审核</h3><div class="stats"><div class="stat"><b id="v4Total">0</b><small>发票商品</small></div><div class="stat"><b id="v4Existing">0</b><small>历史目录命中</small></div><div class="stat"><b id="v4HasImage">0</b><small>原图已关联</small></div><div class="stat"><b id="v4Approved">0</b><small>人工审核确认</small></div></div><p class="muted">支持单款销售价、法语名称检查。若商品已存在，不允许添加为新品。图片仅执行非生成式白底规范化，不能冒充 AI 抠图。</p><div class="scroll"><table><thead><tr><th>行</th><th>条码/EAN</th><th>货号</th><th>原商品名</th><th>法语名称</th><th>销售价 €</th><th>数量</th><th>匹配状态</th><th>图片</th><th>人工确认</th></tr></thead><tbody id="v4Rows"><tr><td colspan="10">先上传发票</td></tr></tbody></table></div></div>
-<div class="panel"><h3>⑥ 分包导出与安全检查</h3><p>每包最多25款；审核包包含按行分组清单及全部状态，不会产生虚假的可发布 <code>products.csv</code>。</p><button class="vbutton" id="v4Export" onclick="v4ExportReview()" disabled>下载审核分批 ZIP（每批≤25款）</button><button class="vbutton secondary" id="v4Publish" disabled>正式 FORTE 上传包（未通过安全门禁）</button><div class="status" id="v4ExportStatus">必须完成：准确配图、售价确认、AI 图片验证及服务端实时二次查重。当前 complete=false；发布请求0。</div></div>
+<div class="panel"><h3>⑥ 分包导出与安全检查</h3><p>每包最多25款；审核包包含按行分组清单及全部状态，不会产生虚假的可发布 <code>products.csv</code>。</p><button class="vbutton" id="v4Export" onclick="v4ExportReview()" disabled>导出仅含待审核新品的分批 ZIP（每批≤25款）</button><button class="vbutton secondary" id="v4Publish" disabled>正式 FORTE 上传包（未通过安全门禁）</button><div class="status" id="v4ExportStatus">必须完成：准确配图、售价确认、AI 图片验证及服务端实时二次查重。当前 complete=false；发布请求0。</div></div>
 </section>
+<section class="v4" id="b-protect"><div class="panel"><h2>🔒 B2 版｜统一防覆盖保护与整批跳过</h2><p class="alert">商城条码已存在 → 直接跳过，不修改名称、图片、售价、库存及上架状态。SKU 冲突 → 人工审核；查询失败/结果不完整 → 禁止新增。生产写入前还必须在商城数据库内原子二次查重。</p><div class="v4 controls"><button class="vbutton" type="button" onclick="bCheckLive()">只读检查商城并分类</button><button class="vbutton secondary" type="button" onclick="bCheckHistory()">用历史库存目录检查</button><button class="vbutton secondary" type="button" onclick="bDownload()">下载跳过／冲突／待核实清单 CSV</button><button class="vbutton" disabled title="生产服务端接入和写入前二次查重未完成">正式新增（安全锁定）</button></div><div class="status" id="bMessage">导入发票后运行查重。此版本不会发送新增、更新或删除请求。</div><p id="bStats">跳过 0｜冲突 0｜未核实 0｜允许创建 0</p><div class="scroll"><table><thead><tr><th>行</th><th>条码</th><th>货号</th><th>商品</th><th>动作</th><th>理由</th></tr></thead><tbody id="bResultRows"></tbody></table></div></div></section>
+<section class="v4" id="b2-guidance"><div class="panel"><h3>🛡️ B2 统一门禁 · 操作顺序</h3><p>① 导入完整发票 → ② 连接历史目录/商城只读查重 → ③ 查看跳过、冲突、未核实 → ④ 仅“权威确认不存在”的新品候选才能进入 AI 图像队列 → ⑤ 审核后导出非发布 ZIP。</p><div class="alert"><strong>生产发布仍锁定。</strong> 当前商城 API 未证明涵盖全部上架与未上架商品及所有分页；没有经验证的数据库原子只新增接口。因此当前只读检查通常不会放行新品候选。这是保护机制生效，不是程序故障。</div><p class="muted">每次重新导入发票或重新查重，之前的 AI 审核结果必须重新生成，以防旧勾选流入新批次。</p></div></section>
 <section class="v51" id="ai-workflow-v51">
 <div class="panel">
-<h2>✨ V5.1 AI 商品图片处理中心</h2>
+<h2>✨ V5.1 AI 商品图片处理中心（统一门禁后）</h2>
 <p class="muted">与上方 V4 发票商品表联动。P1-B 抠图 → P2 美化 → 规格风险检查 → 人工选择图片 → 人工最终确认。AI 通过同源后端接口执行；未部署接口时明确显示失败，不会假装 AI 成功。</p>
 <p class="warning">安全隔离：本区不执行商品发布；不绕过商城实时防重复，也不把本区图片审核结果直接当作 FORTE 合格上传包。</p>
 <label for="v51Api">AI 后端 API 基地址（留空使用当前网站同源）</label>
@@ -270,7 +272,17 @@ async function v4CheckSnapshots(){try{if(!v4.rows.length)throw Error('请先导�
 async function v4TryLive(){try{v4Text('v4DupStatus','正在检查商城只读接口...');const r=await fetch('https://www.dldbazar.com/api/products',{method:'GET',credentials:'omit',cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json(),items=Array.isArray(j)?j:j.items;if(!Array.isArray(items))throw Error('接口响应不是商品数组');const codes=new Set(items.map(x=>v4Code(x.barcode)).filter(Boolean)),skus=new Set(items.map(x=>String(x.sku??'').trim().toUpperCase()));let hits=0;for(const row of v4.rows){if(codes.has(row.eanKey)||skus.has(row.sku.toUpperCase())){row.history='商城实时列表命中｜禁止新增';hits++}}v4.liveResult=`查询成功：返回 ${items.length} 条，匹配 ${hits} 条；未验证是否覆盖未上架商品`;v4Render();v4Text('v4DupStatus',v4.liveResult+'。仍需服务器端二次查重，发布保持关闭。')}catch(e){v4.liveResult='失败：'+e.message;v4Text('v4DupStatus',v4.liveResult+'；必须保持禁止发布。')}}
 function v4CsvCell(x){return '"'+String(x??'').replace(/"/g,'""')+'"'}
 function v4MakeCsv(rows){const hdr=['发票行号','EAN','供应商货号','发票原名称','人工法语名称','采购数量','已确认售价TTC','历史查重结果','图片来源','人工审核','说明'];return '\uFEFF'+[hdr,...rows.map(r=>[r.num,r.ean,r.sku,r.name,r.fr,r.qty,r.price,r.history,r.imageName,r.confirmed?'确认':'未确认',r.notes])].map(r=>r.map(v4CsvCell).join(';')).join('\r\n')}
-async function v4ExportReview(){if(!v4.rows.length)return;const enc=new TextEncoder(),files=[];for(let i=0;i<v4.rows.length;i+=25){const part=v4.rows.slice(i,i+25),id=String(1+Math.floor(i/25)).padStart(2,'0');files.push({name:`审核批次_${id}_${part.length}款.csv`,data:enc.encode(v4MakeCsv(part))})}files.push({name:'全部商品审核.csv',data:enc.encode(v4MakeCsv(v4.rows))});files.push({name:'README_严禁直接发布.txt',data:enc.encode(`发票：${v4.source}\n商品数：${v4.rows.length}\nPDF来源：${v4.pdfs.join(', ')}\n实时接口：${v4.liveResult}\n这是隔离审核清单，不是FORTE正式上传包；无products.csv。\n缺少合格AI图片与服务器二次查重，complete=false，发布请求=0。`)});const blob=zipStore(files),a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=`DLD_BAZAR_${v4.rows.length}款_分批审核_非发布.zip`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),15000);v4Text('v4ExportStatus',`已生成 ${files.length-2} 个审核批次（每批≤25款）；没有生成可发布 products.csv。安全门禁继续生效。`)}
+async function v4ExportReview(){
+ if(!v4.rows.length)return;
+ if(!bstate.checked || bstate.results.length!==v4.rows.length){v4Text('v4ExportStatus','必须先运行 B2 查重；未经核查禁止导出新品分包。');return}
+ const enc=new TextEncoder(),files=[],safe=v4.rows.filter((r,i)=>bstate.results[i]?.action==='CANDIDATE_ONLY');
+ for(let i=0;i<safe.length;i+=25){const part=safe.slice(i,i+25),id=String(1+Math.floor(i/25)).padStart(2,'0');files.push({name:`待审核候选_${id}_${part.length}款.csv`,data:enc.encode(v4MakeCsv(part))})}
+ files.push({name:'全部商品审核_含跳过与拦截.csv',data:enc.encode(v4MakeCsv(v4.rows))});
+ const reason='仅审核文件，无可直接发布的 products.csv。商城未提供权威全量含未上架的查询证明；生产服务端原子查重未接通。complete=false；发布请求=0。';
+ files.push({name:'README_不允许直接发布.txt',data:enc.encode(`发票：${v4.source}\n总数：${v4.rows.length}\n待审核候选：${safe.length}\n查询状态：${bstate.queryCompleteness}\n${reason}`)});
+ const blob=zipStore(files),a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=`DLD_BAZAR_B2_${v4.rows.length}款_统一门禁审核_非发布.zip`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),15000);
+ v4Text('v4ExportStatus',`已导出 ${safe.length} 款待审核候选、${v4.rows.length-safe.length} 款拦截／跳过；未生成 products.csv。`)
+}
 </script>
 <script id="v51-script">
 'use strict';
@@ -287,12 +299,12 @@ function v51Endpoint(path){
 function v51Sync(){
  if(typeof v4==='undefined'||!Array.isArray(v4.rows)){v51Say('当前页面未加载 V4 发票模块');return}
  for(const p of v51.items){if(p.localUrl)URL.revokeObjectURL(p.localUrl)}
- v51.items=v4.rows.map((row,i)=>({
+ v51.items=v4.rows.filter((row,i)=>bstate.checked&&bstate.results[i]?.action==='CANDIDATE_ONLY').map((row,i)=>({
    id:i,ean:String(row.ean||''),sku:String(row.sku||''),name:String(row.fr||row.name||''),
    file:row.image||null,original:row.imageUrl||'',cutout:'',enhanced:'',
    taskId:'',stage:'pending',risk:'unknown',flags:[],approved:false,chosen:'none',localUrl:'',message:''
  }));
- v51Say(`已载入 ${v51.items.length} 款；已关联原图 ${v51.items.filter(x=>x.file).length} 张。无原图商品禁止进入 AI。`);
+ v51Say(`已载入通过统一门禁的待审核候选 ${v51.items.length} 款（已存在/冲突/未核实全部跳过）；已关联原图 ${v51.items.filter(x=>x.file).length} 张。无原图商品禁止进入 AI。`);
  v51Render();
 }
 function v51Render(){
@@ -353,6 +365,7 @@ async function v51Poll(taskId){
 }
 async function v51Execute(p,action,skipRender=false){
  if(!p.file)throw Error('商品未关联独立原图');
+ if(!bstate.checked||!bstate.results.some(r=>r.action==='CANDIDATE_ONLY' && DLDBazarProtect.normBarcode(r.ean)===DLDBazarProtect.normBarcode(p.ean)))throw Error('统一防重复门禁失效或商品已被拦截');
  if(!p.ean&&!p.sku)throw Error('商品缺少可靠条码或货号');
  if(action==='enhance'&&!p.cutout)throw Error('需要先完成抠图');
  if(action==='risk'&&!p.enhanced)throw Error('需要先完成美化');
@@ -394,7 +407,7 @@ async function v51Execute(p,action,skipRender=false){
 }
 async function v51Batch(action){
  if(v51.running)return;
- const eligible=v51.items.filter(p=>p.file&&(action==='extract'||action==='enhance'&&p.cutout||action==='risk'&&p.enhanced));
+ const eligible=v51.items.filter(p=>bstate.checked&&bstate.results.some(r=>r.action==='CANDIDATE_ONLY'&&DLDBazarProtect.normBarcode(r.ean)===DLDBazarProtect.normBarcode(p.ean))&&p.file&&(action==='extract'||action==='enhance'&&p.cutout||action==='risk'&&p.enhanced));
  if(!eligible.length){v51Say('没有可以执行此步骤的商品；先导入发票和独立图片。');return}
  v51.running=true;
  for(let i=0;i<eligible.length;i++){v51Say(`${action}：正在处理 ${i+1}/${eligible.length}，条码 ${eligible[i].ean||eligible[i].sku}`);await v51Execute(eligible[i],action,true);v51Render()}
@@ -402,7 +415,7 @@ async function v51Batch(action){
 }
 async function v51Export(){
  // 安全上只导出已确认 AI 美化图与审核清单；不生成 products.csv
- const valid=v51.items.filter(p=>p.approved&&p.chosen==='enhanced'&&p.risk==='low'&&p.flags.length===0&&p.enhanced&&p.file);
+ const valid=v51.items.filter(p=>bstate.checked&&bstate.results.some(r=>r.action==='CANDIDATE_ONLY'&&DLDBazarProtect.normBarcode(r.ean)===DLDBazarProtect.normBarcode(p.ean))&&p.approved&&p.chosen==='enhanced'&&p.risk==='low'&&p.flags.length===0&&p.enhanced&&p.file);
  if(!valid.length){v51Say('没有合格已人工确认的图片；拒绝导出。');return}
  const seen=new Set(),files=[],rows=[['条码','SKU','法语名称','图片','AI风险','人工确认']];
  for(const p of valid){
@@ -429,4 +442,107 @@ async function v51Export(){
  v51Say('已导出 '+valid.length+' 款已确认图片审核 ZIP；未生成 products.csv，未发布商品。');
 }
 </script>
-</body></html>
+<script>
+(function(global){'use strict';
+ function normBarcode(x){let s=String(x??'').trim().replace(/[\s.\-\/]/g,'');if(!/^\d+$/.test(s))return '';s=s.replace(/^0+/,'')||'0';return s.length>=12?s.slice(0,12):s}
+ function normSku(x){return String(x??'').trim().toUpperCase()}
+ function index(records){const bars=new Map(),skus=new Map();for(const r of records){const b=normBarcode(r.barcode??r.ean??r.code),s=normSku(r.sku??r.item_code);if(b){if(!bars.has(b))bars.set(b,[]);bars.get(b).push(r)}if(s){if(!skus.has(s))skus.set(s,[]);skus.get(s).push(r)}}return {bars,skus}}
+ function identity(r){return String(r.id??r.product_id??(normBarcode(r.barcode??r.ean??r.code)+'|'+normSku(r.sku??r.item_code)))}
+ function classify(rows, existing, opts={}){
+  const idx=index(existing), known=new Map(), results=[];
+  for(const r of rows){const b=normBarcode(r.ean??r.barcode),s=normSku(r.sku??r.item_code),foundB=b?(idx.bars.get(b)||[]):[],foundS=s?(idx.skus.get(s)||[]):[];
+   let action='BLOCK_UNVERIFIED',reason='未获得商城完整权威查询结果，不能证明不存在';
+   if(!b){action='REVIEW_CONFLICT';reason='缺少有效数字条码，必须人工确认'}
+   else if(known.has(b)){action='REVIEW_CONFLICT';reason='本次发票内重复条码：行 '+known.get(b)}
+   else if(foundB.length>1||foundS.length>1){action='REVIEW_CONFLICT';reason='商城有多个同条码或SKU记录'}
+   else if(foundB.length&&foundS.length&&identity(foundB[0])!==identity(foundS[0])){action='REVIEW_CONFLICT';reason='条码与SKU分别命中不同商品'}
+   else if(foundB.length){const matchSku=normSku(foundB[0].sku??foundB[0].item_code);if(matchSku&&s&&matchSku!==s){action='REVIEW_CONFLICT';reason='同条码但SKU不一致：人工审核，禁止覆盖及新增'}else{action='SKIP_EXISTING';reason='商城条码已存在：跳过且禁止覆盖'}}
+   else if(foundS.length){action='REVIEW_CONFLICT';reason='相同SKU对应不同或缺失条码，需人工确认'}
+   else if(opts.authoritativeComplete===true&&opts.canVerifyUnlisted===true){action='CANDIDATE_ONLY';reason='权威完整查询未命中；仍必须由生产服务端写入前原子二次查重'}
+   else{action='BLOCK_UNVERIFIED';reason='查询不完整或未覆盖未上架商品，禁止新增'}
+   if(b&&!known.has(b))known.set(b,r.num??results.length+1);
+   results.push({...r, normalized_barcode:b,normalized_sku:s,action,reason});
+  }
+  return results;
+ }
+ global.DLDBazarProtect={normBarcode,normSku,index,classify};
+ if(typeof module!=='undefined'&&module.exports)module.exports=global.DLDBazarProtect;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script><script>
+'use strict';
+const bstate={results:[],checked:false,queryCompleteness:'none',queryError:'',generation:0};
+function bEl(id){return document.getElementById(id)}
+function bText(id,txt){bEl(id).textContent=txt}
+function bSummary(){const c={};for(const p of bstate.results)c[p.action]=(c[p.action]||0)+1;return ['跳过已存在 '+(c.SKIP_EXISTING||0),'编码冲突 '+(c.REVIEW_CONFLICT||0),'未核实 '+(c.BLOCK_UNVERIFIED||0),'仅候选 '+(c.CANDIDATE_ONLY||0)].join('｜')}
+function bRows(){return (typeof v4!=='undefined'&&Array.isArray(v4.rows))?v4.rows:[]}
+function bClassify(records,authority){
+ bstate.generation++;if(typeof v51!=='undefined'){v51.items=[];v51Render()}
+ const rows=bRows();if(!rows.length){bText('bMessage','请先导入整张发票。');return}
+ bstate.results=DLDBazarProtect.classify(rows,records,authority);
+ bstate.checked=true;bstate.queryCompleteness=authority?.authoritativeComplete?'authoritative':'partial';
+ for(let i=0;i<rows.length;i++){const x=bstate.results[i];rows[i].protectAction=x.action;rows[i].protectReason=x.reason;
+  if(x.action==='SKIP_EXISTING')rows[i].history='商城已存在｜自动跳过、不覆盖';
+  else if(x.action==='REVIEW_CONFLICT')rows[i].history='冲突｜人工审核，禁止上传';
+  else rows[i].history='未核实｜禁止发布';
+ }
+ if(typeof v4Render==='function')v4Render();bRender();
+}
+function bRender(){
+ const t=bEl('bResultRows');if(!t)return;
+ t.innerHTML='';for(const [i,p] of bstate.results.entries()){
+  const tr=document.createElement('tr');for(const value of [p.num||i+1,p.ean||'',p.sku||'',p.name||'',p.action,p.reason]){
+   const td=document.createElement('td');td.textContent=String(value);tr.appendChild(td)
+  }t.appendChild(tr);
+ }
+ bText('bStats',bSummary()+'｜允许客户端创建：0');
+ bText('bMessage',bstate.queryError||'已生成保护清单。只有服务端原子二次查重才能授权新增；本页面不会写入商城。');
+}
+async function bCheckHistory(){
+ bstate.queryError='';try{
+  if(!bRows().length)throw Error('请先导入发票');
+  bText('bMessage','正在读取历史目录。历史目录只可以证明部分商品已存在，不能证明不存在。');
+  const cat=await catalogs();
+  const rows=(cat.uploaded||[]).map(r=>({barcode:r[6],sku:r[0],name:r[1]}));
+  // 库存 snapshot 匹配也只能封锁候选，不能取代商城SKU匹配。
+  bClassify(rows,{authoritativeComplete:false,canVerifyUnlisted:false});
+  const inv=new Set((cat.inventory||[]).map(r=>DLDBazarProtect.normBarcode(r[0])));
+  for(const p of bstate.results)if(p.action==='BLOCK_UNVERIFIED'&&inv.has(p.normalized_barcode)){
+   p.reason='中心库存快照已有编码；不处理为新品，待确认是否已上架';
+  }
+  bstate.queryError='历史快照核查完毕；结果不能作为正式新增许可。';bRender();
+ }catch(e){bFail('历史目录查询失败：'+e.message)}
+}
+async function bCheckLive(){
+ bstate.queryError='';try{
+  if(!bRows().length)throw Error('请先导入发票');
+  bText('bMessage','正在只读查询商城；不会发送任何发布或更新请求。');
+  const r=await fetch('https://www.dldbazar.com/api/products',{method:'GET',credentials:'omit',cache:'no-store'});
+  if(!r.ok)throw Error('商城 HTTP '+r.status);
+  const j=await r.json();const rows=Array.isArray(j)?j:j.items;
+  if(!Array.isArray(rows))throw Error('返回值不是商品列表');
+  // Explicitly partial. Endpoint has no proof all pages/unlisted products are present.
+  bClassify(rows.map(x=>({barcode:x.barcode,sku:x.sku,name:x.name,id:x.id})),{authoritativeComplete:false,canVerifyUnlisted:false});
+  bstate.queryError=`商城只读查询返回 ${rows.length} 条；接口完整性和未上架覆盖未经证明，未命中一律不准新增。`;
+  bRender();
+ }catch(e){bFail('实时接口失败：'+e.message+'。全部保持禁止新增。')}
+}
+function bFail(msg){
+ bstate.generation++;if(typeof v51!=='undefined'){v51.items=[];v51Render()}
+ bstate.results=DLDBazarProtect.classify(bRows(),[],{authoritativeComplete:false,canVerifyUnlisted:false});
+ // Do not treat previous history as a proof of fresh data; keep existing skip flags where possible.
+ for(const p of bstate.results){p.action='BLOCK_UNVERIFIED';p.reason=msg}
+ bstate.checked=false;bstate.queryError=msg;bRender();
+}
+function bCsvCell(x){return '"'+String(x??'').replace(/"/g,'""')+'"'}
+function bDownload(){if(!bstate.results.length){bText('bMessage','没有保护清单，请先查询。');return}
+ const cols=['发票行','条码','供应商货号','商品名称','操作分类','原因','发布请求'];
+ const data='\uFEFF'+[cols,...bstate.results.map(x=>[x.num,x.ean,x.sku,x.name,x.action,x.reason,'0'])].map(r=>r.map(bCsvCell).join(';')).join('\r\n');
+ const obj=new Blob([data],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(obj),a=document.createElement('a');
+ a.href=url;a.download='DLD_BAZAR_B版_保护审核清单_不发布.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),20000);
+ bText('bMessage','保护审核 CSV 已生成；不包含成本，发布请求 0。');
+}
+const bOriginalLoad=typeof v4LoadInvoice==='function'?v4LoadInvoice:null;
+if(bOriginalLoad){v4LoadInvoice=async function(){bFail('发票发生变化，请重新查重');await bOriginalLoad()}}
+
+</script></body></html>
