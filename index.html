@@ -23,8 +23,8 @@
 .v51 .pill{display:inline-block;background:#e9eff8;padding:4px 8px;border-radius:30px;font-size:12px}
 @media(max-width:560px){.v51 .panel{padding:12px}.v51 .triptych img{height:80px}}
 </style>
-<style id="v4-paste-styles">.v4paste{margin-top:14px;border:1px solid #afc5e5;border-radius:12px;padding:13px;background:#f6f9ff}.v4paste-title{font-weight:700;margin-bottom:7px}.v4paste textarea{width:100%;box-sizing:border-box;min-height:145px;padding:12px;border:1px solid #b4c4d9;border-radius:9px;font:14px/1.6 ui-monospace,monospace;resize:vertical;background:#fff;color:#14253a}.v4paste-controls{display:flex;flex-wrap:wrap;gap:6px}.v4paste-controls button{width:auto!important;margin:0!important}.v4paste #v4PasteStatus{margin-top:8px;white-space:pre-wrap}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B4｜粘贴导入＋统一保护门禁与 AI 图片审核</div></header><section class="v4" id="workflow-v4">
-<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 B4 版</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
+<style id="v4-paste-styles">.v4paste{margin-top:14px;border:1px solid #afc5e5;border-radius:12px;padding:13px;background:#f6f9ff}.v4paste-title{font-weight:700;margin-bottom:7px}.v4paste textarea{width:100%;box-sizing:border-box;min-height:145px;padding:12px;border:1px solid #b4c4d9;border-radius:9px;font:14px/1.6 ui-monospace,monospace;resize:vertical;background:#fff;color:#14253a}.v4paste-controls{display:flex;flex-wrap:wrap;gap:6px}.v4paste-controls button{width:auto!important;margin:0!important}.v4paste #v4PasteStatus{margin-top:8px;white-space:pre-wrap}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B4.1｜Excel导入修复＋粘贴导入＋统一保护门禁与 AI 图片审核</div></header><section class="v4" id="workflow-v4">
+<div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 B4.1 版</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
 <div class="steps"><div class="step">① 发票导入</div><div class="step">② 图片来源</div><div class="step">③ 防重复</div><div class="step">④ 图片审核</div><div class="step">⑤ 整批确认</div><div class="step">⑥ FORTE 分包</div></div>
 <div class="panel"><h3>① 整张发票导入 · 不限25款</h3><label class="drop">选择发票（XLSX/XLS/CSV），一次导入所有商品<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button class="vbutton" id="v4Load" onclick="v4LoadInvoice()">读取整张发票</button><div class="v4paste" id="v4PasteArea"><div class="v4paste-title">📋 新增：粘贴发票数据 / 文件</div>
 <p class="muted">可直接粘贴 Excel 复制的整块表格（含表头 EAN、Codice articolo、Descrizione、Q.tà），或 CSV/TSV 文本；支持几百行。不会把文本发送到外部服务。</p>
@@ -275,9 +275,52 @@ function v4Text(id,value){v4El(id).textContent=value;}
 function v4Esc(v){return String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));}
 function v4Code(v){let s=String(v??'').trim().replace(/[\s.\-\/]/g,'').replace(/^0+/,'');return /^\d+$/.test(s)?s.slice(0,12):s.toUpperCase()}
 function v4ParseRows(csv){const sep=csv.split(/\r?\n/)[0].includes(';')?';':',';return parseCsv(csv,sep)}
-async function v4SheetJs(){if(window.XLSX)return window.XLSX;await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.onload=resolve;s.onerror=()=>reject(Error('表格解析库无法加载，请另存 CSV 后导入'));document.head.append(s)});return window.XLSX}
+async function v4SheetJs(){
+ if(window.XLSX&&window.XLSX.read)return window.XLSX;
+ const sources=['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'];
+ for(let i=0;i<sources.length;i++){
+  v4Text('v4InvoiceStatus',`正在加载 Excel 解析组件（备用线路 ${i+1}/${sources.length}）…`);
+  try{
+   await new Promise((resolve,reject)=>{
+    const sc=document.createElement('script');let done=false;
+    const finish=(err)=>{if(done)return;done=true;clearTimeout(t);sc.onload=sc.onerror=null;if(err){sc.remove();reject(err)}else resolve()};
+    const t=setTimeout(()=>finish(Error('连接超时')),10000);
+    sc.src=sources[i];sc.async=true;sc.onload=()=>finish();sc.onerror=()=>finish(Error('网络加载失败'));document.head.append(sc)
+   });
+   if(window.XLSX&&window.XLSX.read)return window.XLSX;
+  }catch(e){}
+ }
+ throw Error('Excel 解析组件无法加载（三条备用线路均失败）。请检查手机网络，关闭拦截器后重试，或把 Excel 另存为 CSV 再导入；不是文件没选中。');
+}
 function v4InvoiceRows(arr){const header=arr.findIndex(r=>r.some(x=>String(x??'').trim().toUpperCase()==='EAN')&&r.some(x=>/Codice articolo/i.test(String(x))));if(header<0)throw Error('未找到含 EAN / Codice articolo 的发票表头；拒绝猜测字段');const head=arr[header].map(x=>String(x??'').trim());const find=x=>head.findIndex(h=>x.test(h));const c={ean:find(/^EAN$/i),sku:find(/Codice articolo/i),name:find(/Descrizione/i),qty:find(/Q.tà|Quantit/i)};if(Object.values(c).some(i=>i<0))throw Error('缺少必要的条码、货号、商品名或数量列');return arr.slice(header+1).filter(r=>/^\d+$/.test(String(r[0]??'').trim())&&r[c.ean]&&r[c.name]&&!/PEDANE EPAL/i.test(String(r[c.name]))).map((r,i)=>({num:i+1,ean:String(r[c.ean]).trim(),sku:String(r[c.sku]??'').trim(),name:String(r[c.name]),fr:'',qty:Number(r[c.qty])||0,price:'',history:'未检查',confirmed:false,image:null,imageName:'',imageUrl:'',notes:'',eanKey:v4Code(r[c.ean])}))}
-async function v4LoadInvoice(){try{const f=v4El('v4Invoice').files[0];if(!f)throw Error('请选择发票文件');v4Text('v4InvoiceStatus','读取中：'+f.name);let matrix;if(/\.csv$|\.txt$/i.test(f.name)){matrix=v4ParseRows(await f.text())}else{const lib=await v4SheetJs();const w=lib.read(await f.arrayBuffer(),{type:'array',cellDates:false});matrix=lib.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{header:1,defval:''})}v4.rows=v4InvoiceRows(matrix);v4.source=f.name;v4.snapshotChecked=false;v4.liveResult='未检查';v4Render();v4Text('v4InvoiceStatus','已导入 '+v4.rows.length+' 款。识别托盘、表尾及非商品行后排除。没有自动计算售价或发布。');}catch(e){v4Text('v4InvoiceStatus','读取失败：'+e.message)}}
+async function v4LoadInvoice(){
+ const btn=v4El('v4Load');btn.disabled=true;
+ try{
+  const f=v4El('v4Invoice').files[0];if(!f)throw Error('请先选择发票文件');
+  v4Text('v4InvoiceStatus','正在读取：'+f.name+'（'+(f.size/1024).toFixed(0)+' KB）');
+  let rows, sheet='';
+  if(/\.(csv|txt)$/i.test(f.name)){
+   rows=v4InvoiceRows(v4ParseRows(await f.text()));sheet='CSV';
+  }else if(/\.(xlsx|xls)$/i.test(f.name)){
+   const bytes=await f.arrayBuffer();if(!bytes.byteLength)throw Error('选中的文件是空文件');
+   const lib=await v4SheetJs();
+   v4Text('v4InvoiceStatus','解析工作簿：'+f.name+'，正在查找商品表头…');
+   let wb;try{wb=lib.read(bytes,{type:'array',cellDates:false})}catch(e){throw Error('Excel 文件解析错误：'+e.message)}
+   const failures=[];
+   for(const name of wb.SheetNames){
+    try{
+     const matrix=lib.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:'',raw:false});
+     const candidate=v4InvoiceRows(matrix);
+     if(candidate.length){rows=candidate;sheet=name;break}
+     failures.push(name+'：没有商品记录');
+    }catch(e){failures.push(name+'：'+e.message)}
+   }
+   if(!rows)throw Error('没有找到可识别的发票商品表。各工作表情况：'+failures.slice(0,5).join('；')+'。请截图发票的列标题给我。');
+  }else throw Error('仅接受 XLS、XLSX、CSV、TXT');
+  v4.rows=rows;v4.source=f.name;v4.snapshotChecked=false;v4.liveResult='未检查';v4Render();
+  v4Text('v4InvoiceStatus','读取成功：'+f.name+' / 工作表「'+sheet+'」/ '+v4.rows.length+' 款。尚未发布商品。');
+ }catch(e){v4Text('v4InvoiceStatus','❌ 读取失败：'+e.message)}finally{btn.disabled=false}
+}
 function v4Render(){v4Text('v4Total',v4.rows.length);v4Text('v4Existing',v4.rows.filter(x=>x.history.includes('命中')).length);v4Text('v4HasImage',v4.rows.filter(x=>x.image).length);v4Text('v4Approved',v4.rows.filter(x=>x.confirmed).length);v4El('v4Export').disabled=!v4.rows.length;const body=v4El('v4Rows');body.innerHTML=v4.rows.map((r,i)=>`<tr><td>${r.num}</td><td><code>${v4Esc(r.ean)}</code></td><td>${v4Esc(r.sku)}</td><td>${v4Esc(r.name)}</td><td><input aria-label="法语名称 ${i+1}" value="${v4Esc(r.fr)}" onchange="v4Edit(${i},'fr',this.value)" placeholder="待确认"></td><td><input type="number" min="0" step="0.01" aria-label="销售价 ${i+1}" value="${v4Esc(r.price)}" onchange="v4Edit(${i},'price',this.value)" placeholder="原售价"></td><td>${r.qty}</td><td>${v4Esc(r.history)}</td><td>${r.imageUrl?`<img class="thumb" alt="${v4Esc(r.imageName)}" src="${r.imageUrl}">`:'待配图'}</td><td><input type="checkbox" aria-label="确认商品 ${i+1}" ${r.confirmed?'checked':''} onchange="v4Edit(${i},'confirmed',this.checked)"></td></tr>`).join('')||'<tr><td colspan="10">先上传发票</td></tr>';}
 function v4Edit(i,field,val){if(!v4.rows[i])return;v4.rows[i][field]=val;v4Text('v4Approved',v4.rows.filter(x=>x.confirmed).length)}
 function v4Stem(name){return String(name||'').split(/[\\/]/).pop().replace(/\.[^.]+$/,'').trim()}
