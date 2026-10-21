@@ -23,11 +23,11 @@
 .v51 .pill{display:inline-block;background:#e9eff8;padding:4px 8px;border-radius:30px;font-size:12px}
 @media(max-width:560px){.v51 .panel{padding:12px}.v51 .triptych img{height:80px}}
 </style>
-<style id="v4-paste-styles">.v4paste{margin-top:14px;border:1px solid #afc5e5;border-radius:12px;padding:13px;background:#f6f9ff}.v4paste-title{font-weight:700;margin-bottom:7px}.v4paste textarea{width:100%;box-sizing:border-box;min-height:145px;padding:12px;border:1px solid #b4c4d9;border-radius:9px;font:14px/1.6 ui-monospace,monospace;resize:vertical;background:#fff;color:#14253a}.v4paste-controls{display:flex;flex-wrap:wrap;gap:6px}.v4paste-controls button{width:auto!important;margin:0!important}.v4paste #v4PasteStatus{margin-top:8px;white-space:pre-wrap}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B4.6｜导入可视诊断与可靠备用导入＋粘贴导入＋统一保护门禁与 AI 图片审核</div></header><section style="max-width:1120px;margin:12px auto;padding:0 16px"><div id="b45Environment" role="status" style="background:#fff4e6;border:2px solid #ffb759;padding:16px;border-radius:12px;color:#7b3800;font-size:16px;line-height:1.6"><b>当前版本 B4.6 · 正在检查运行环境…</b></div></section><script>(function(){const file=location.protocol==='file:';const host=location.hostname;const official=host==='huyundong168168-design.github.io';const el=document.getElementById('b45Environment');el.style.background=official?'#e9f7ef':'#fff4e6';el.style.borderColor=official?'#66a77c':'#ffb759';el.style.color=official?'#165a2e':'#7b3800';el.textContent=official?'✅ 当前是 GitHub Pages 网站 · B4.6。请选择发票后点击「读取整张发票」，再查看按钮下方结果。':file?'⚠️ 当前打开的是 iPhone 下载文件预览（index.html），不是正式网站！文件预览可能阻止 XLSX 读取。请通过 Safari 打开 https://huyundong168168-design.github.io/dld-bazar-workflow/?v=B4.6；或者先用附带的40款 CSV 导入。':'⚠️ 当前不是正式 GitHub Pages 网站（'+(host||'本地预览')+'），浏览器可能限制文件读取。推荐使用正式工作台网址。';})();</script>
+<style id="v4-paste-styles">.v4paste{margin-top:14px;border:1px solid #afc5e5;border-radius:12px;padding:13px;background:#f6f9ff}.v4paste-title{font-weight:700;margin-bottom:7px}.v4paste textarea{width:100%;box-sizing:border-box;min-height:145px;padding:12px;border:1px solid #b4c4d9;border-radius:9px;font:14px/1.6 ui-monospace,monospace;resize:vertical;background:#fff;color:#14253a}.v4paste-controls{display:flex;flex-wrap:wrap;gap:6px}.v4paste-controls button{width:auto!important;margin:0!important}.v4paste #v4PasteStatus{margin-top:8px;white-space:pre-wrap}</style></head><body><header><h1>🛒 DLD BAZAR</h1><div>自动上架工作台 · B4.7｜选文件自动读取与可靠备用导入＋粘贴导入＋统一保护门禁与 AI 图片审核</div></header><section style="max-width:1120px;margin:12px auto;padding:0 16px"><div id="b45Environment" role="status" style="background:#fff4e6;border:2px solid #ffb759;padding:16px;border-radius:12px;color:#7b3800;font-size:16px;line-height:1.6"><b>当前版本 B4.7 · 正在检查运行环境…</b></div></section><script>(function(){const file=location.protocol==='file:';const host=location.hostname;const official=host==='huyundong168168-design.github.io';const el=document.getElementById('b45Environment');el.style.background=official?'#e9f7ef':'#fff4e6';el.style.borderColor=official?'#66a77c':'#ffb759';el.style.color=official?'#165a2e':'#7b3800';el.textContent=official?'✅ 当前是 GitHub Pages 网站 · B4.7。请选择发票后点击「读取整张发票」，再查看按钮下方结果。':file?'⚠️ 当前打开的是 iPhone 下载文件预览（index.html），不是正式网站！文件预览可能阻止 XLSX 读取。请通过 Safari 打开 https://huyundong168168-design.github.io/dld-bazar-workflow/?v=B4.7；或者先用附带的40款 CSV 导入。':'⚠️ 当前不是正式 GitHub Pages 网站（'+(host||'本地预览')+'），浏览器可能限制文件读取。推荐使用正式工作台网址。';})();</script>
 <section class="v4" id="workflow-v4">
 <div class="v4header"><h2>📦 D.L.D BAZAR · 一体化商品上传工作台 B4.6 版</h2><p>整张发票 → 图片目录 → 中心库存及商城查重 → 图片逐款审核 → FORTE 分批。离线草稿模式；未确认实时查重前禁止发布。</p></div>
 <div class="steps"><div class="step">① 发票导入</div><div class="step">② 图片来源</div><div class="step">③ 防重复</div><div class="step">④ 图片审核</div><div class="step">⑤ 整批确认</div><div class="step">⑥ FORTE 分包</div></div>
-<div class="panel"><h3>① 整张发票导入 · 不限25款 · B4.6 手机导入诊断版</h3><label class="drop">选择发票（XLSX/XLS/CSV），一次导入所有商品<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button type="button" class="vbutton" id="v4Load" onclick="v4LoadInvoice()">读取整张发票</button><div id="v46VisibleStatus" role="status" aria-live="assertive" style="margin:12px 0;padding:15px;border:2px solid #a6bce0;border-radius:12px;background:#eaf1ff;font-weight:700;font-size:17px;white-space:pre-wrap">等待读取。点击蓝色按钮后，这里会显示成功记录数或具体错误。</div><button type="button" class="vbutton secondary" onclick="v46LoadVerified()">✅ 直接载入已核验 Veneto Home 发票（40款，无需选Excel）</button><p class="muted">上方是这一次发票的离线备用入口，仅用于 D.L.D.BAZAR26621332 的40款；其他发票请正常上传 Excel/CSV。</p><div class="v4paste" id="v4PasteArea"><div class="v4paste-title">📋 新增：粘贴发票数据 / 文件</div>
+<div class="panel"><h3>① 整张发票导入 · 不限25款 · B4.7 选文件自动读取版</h3><label class="drop">选择发票（XLSX/XLS/CSV）→ 自动读取整张发票，无需再按按钮<input id="v4Invoice" type="file" accept=".xlsx,.xls,.csv,.txt"></label><button type="button" class="vbutton" id="v4Load" onclick="v4LoadInvoice()">手动重新读取发票</button><div id="v46VisibleStatus" role="status" aria-live="assertive" style="margin:12px 0;padding:15px;border:2px solid #a6bce0;border-radius:12px;background:#eaf1ff;font-weight:700;font-size:17px;white-space:pre-wrap">请选择 Excel/CSV 发票，选完后将自动读取，无需再点击蓝色按钮；蓝色按钮可用于手动重试。</div><button type="button" class="vbutton secondary" onclick="v46LoadVerified()">✅ 直接载入已核验 Veneto Home 发票（40款，无需选Excel）</button><p class="muted">上方是这一次发票的离线备用入口，仅用于 D.L.D.BAZAR26621332 的40款；其他发票请正常上传 Excel/CSV。</p><div class="v4paste" id="v4PasteArea"><div class="v4paste-title">📋 新增：粘贴发票数据 / 文件</div>
 <p class="muted">可直接粘贴 Excel 复制的整块表格（含表头 EAN 或 Codice Barra、Codice articolo 或 ART、Descrizione 或 Local Descrizione、Q.tà 或 QNT），或 CSV/TSV 文本；支持几百行。不会把文本发送到外部服务。</p>
 <textarea id="v4PasteInput" rows="6" spellcheck="false" autocomplete="off" placeholder="在 Excel 里复制包含表头的整张商品表，再长按这里 → 粘贴。也可粘贴 CSV/TSV 内容。"></textarea>
 <div class="v4paste-controls"><button type="button" class="vbutton secondary" onclick="v4ReadClipboard()">从剪贴板粘贴</button><button type="button" class="vbutton" onclick="v4LoadPaste()">读取粘贴数据</button><button type="button" class="vbutton secondary" onclick="v4PasteClear()">清空</button></div>
@@ -844,4 +844,28 @@ const b4OriginalPasteLoader=v4LoadPaste;
 v4LoadPaste=function(){b4Reset('粘贴内容变化，旧库存核对状态已失效');b4OriginalPasteLoader();if(b4.loaded&&v4.rows.length)b4Match()};
 const b4OriginalEdit=v4Edit;
 v4Edit=function(i,field,val){b4OriginalEdit(i,field,val);if(['price','fr'].includes(field)){const r=v4.rows[i];if(r)r.confirmed=false;if(typeof v4Render==='function')v4Render();}}
+</script><script id="b47-autoload-fix">
+// B4.7: direct change listener; same verified v4LoadInvoice path as the manual button.
+// Do not auto-publish, do not change stored products.
+(function(){
+ const f=document.getElementById('v4Invoice');
+ const btn=document.getElementById('v4Load');
+ const status=document.getElementById('v46VisibleStatus');
+ if(!f||!btn||!status)return;
+ let pending=false;
+ f.addEventListener('change',async function(){
+   if(!f.files||!f.files.length)return;
+   if(pending)return;
+   pending=true;
+   status.textContent='⏳ 已选中 '+f.files[0].name+'。正在自动读取，请稍候…';
+   try{
+     if(typeof v4LoadInvoice!=='function')throw Error('读取程序未正常初始化，请刷新页面。');
+     await v4LoadInvoice();
+   }catch(err){
+     status.textContent='❌ 自动读取发生错误：'+(err&&err.message||String(err));
+     status.style.background='#fff0f0';
+     status.style.borderColor='#d55';
+   }finally{pending=false;}
+ });
+})();
 </script></body></html>
