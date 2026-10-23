@@ -32,8 +32,18 @@ function zipStore(files){const enc=new TextEncoder(),chunks=[],central=[];let of
 const norm=x=>String(x??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]/g,'');
 const key=x=>{let s=String(x??'').trim().replace(/\.0+$/,'').replace(/[\s.\-/]/g,'');return /^\d+$/.test(s)?(s.replace(/^0+/,'')||'0').slice(0,12):s.toUpperCase()};
 const sk=x=>String(x??'').trim().toUpperCase();
-const fields={ean:['codebarres','ean','codebarre','codicebarra','codiceabarre','barcode','gtin','条码','编码','code'],sku:['referencefournisseur','sku','货号sku','货号','原始货号','供应商货号','codicearticolo','codarticolo','articolo','art','reference','ref'],name:['nomduproduitfr','name','名称','商品名称','产品名称','发票原名称','descrizione','localdescrizione','description','libelle','designation','nomeprodotto','productname'],qty:['qta','qt','qnt','数量','采购数量','quantita','quantite','quantity','qty','pezzi','scatolaqnt'],price:['prixdeventettc','pvttc','saleprice','salesprice','prixvente','销售价eur','销售价','销售价格','售价','售价ttc'],fr:['nomduproduitfr','nomfr','namefr','法语名称','法语简称'],category:['category','categorie','分类','品类'],stock:['stock','库存','库存记录','stocksite']};
-function columns(row){return Object.fromEntries(Object.entries(fields).map(([k,aliases])=>[k,row.findIndex(x=>aliases.includes(norm(x)))]))}
+const fields={
+ ean:['codebarres','codebarre','ean13','ean','barcode','gtin','codicebarra','codiceabarre','codiceabarra','产品条码','商品条码','条形码','条码','产品编码','商品编码','编码','code'],
+ sku:['referencefournisseur','referencearticle','referenceduproduit','codearticle','numerodarticle','refarticle','sku','货号sku','供应商货号','原始货号','产品货号','商品货号','货号','codicearticolo','codarticolo','articolo','art','reference','ref'],
+ name:['designationabregeefr','nomduproduitfr','nomduproduit','nomarticle','法语简称','法语名称','商品名称法语','产品名称法语','名称法语','designation','libelle','商品名称','产品名称','名称','发票原名称','designationdorigine','descriptionoriginaleit','descrizione','localdescrizione','description','nomeprodotto','productname','name'],
+ qty:['quantitefacturee','quantitecommandee','quantiteachetee','发票数量','采购数量','订购数量','商品数量','产品数量','数量件','数量','quantite','qte','qta','qt','qnt','quantita','quantity','qty','pezzi','scatolaqnt'],
+ price:['prixdeventettc','prixdeventecentralttc','prixdevente','prixventettc','pvttc','pvente','销售价格ttceur','销售价ttceur','销售价eur','销售价ttc','售价ttc','中心库存销售价','中心库存售价','中心库销售价','中心库售价','含税销售价','含税售价','销售价格','销售价','售价','saleprice','salesprice','prixvente'],
+ fr:['designationabregeefr','nomduproduitfr','nomfr','namefr','法语简称','法语名称','商品名称法语','产品名称法语','名称法语'],
+ category:['categorie','categorieduproduit','category','商品分类','产品分类','主品类','分类','品类','种类'],
+ stock:['stock','quantiteenstock','库存数量','库存记录','库存','stocksite']
+};
+function headerNames(value){const parts=[String(value??''),...String(value??'').split(/[/／|\r\n]+/)];return parts.flatMap(part=>[norm(part),norm(part.replace(/[（(]\s*(?:€|EUR|pcs|pièces|unités?|件|个)\s*[）)]/gi,''))]).filter(Boolean)}
+function columns(row){const names=row.map(headerNames);return Object.fromEntries(Object.entries(fields).map(([k,aliases])=>{for(const alias of aliases){const i=names.findIndex(tokens=>tokens.includes(alias));if(i>=0)return [k,i]}return [k,-1]}))}
 function header(rows,invoice){for(let i=0;i<rows.length;i++){if(!Array.isArray(rows[i]))continue;const c=columns(rows[i]);if(invoice?c.name>=0&&c.qty>=0&&(c.ean>=0||c.sku>=0):c.name>=0&&(c.ean>=0||c.sku>=0))return {index:i,c}}throw Error('未识别表头：发票需要名称、数量、条码或货号；目录需要名称、条码或货号。')}
 function number(x){const s=String(x??'').trim().replace(/\s/g,'').replace('€','');return s===''?null:Number(s.includes(',')?s.replace(/\./g,'').replace(',','.'):s)}
 function splitCsv(text){const first=text.replace(/^\uFEFF/,'').split(/\r?\n/)[0];const sep=first.includes('\t')?'\t':first.includes(';')?';':',';return parseCsv(text,sep)}
