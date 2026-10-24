@@ -209,6 +209,20 @@ for(const [id,label] of [['invoice','invoiceFilename'],['pictures','picturesFile
 const links=Array.from(document.querySelectorAll('.rail nav a'));for(const link of links)link.addEventListener('click',()=>{for(const a of links)a.classList.toggle('active',a===link)});update();})();
 </script><script>// Upload completion is explicit. Only server-owned jobs survive closing a tab.
 let currentBackgroundId=null;
+const finishedForegroundJobs=new Set();
+function foregroundFinished(j){return j.delivery==='direct'&&(j.batchFinished===true||(['completed','needs_attention'].includes(j.status)&&j.importProgress?.eligibleComplete))}
+function resetFinishedForeground(j){
+ if(!foregroundFinished(j))return false;
+ // A late response for an earlier batch must never clear newly selected input.
+ if(currentBackgroundId!==j.id&&($('invoice').files.length||$('paste').dataset.active==='yes'))return false;
+ if(finishedForegroundJobs.has(j.id))return true;finishedForegroundJobs.add(j.id);
+ generation++;clearTimeout(runTimer);currentBackgroundId=null;importPollTarget=null;
+ for(const id of ['invoice','pictures','pdfs','catalogs','paste'])$(id).value='';$('paste').dataset.active='no';
+ lastRows=[];lastIssues=[];metadataOverrides.clear();clearDownloads();$('productInfo').replaceChildren();
+ for(const id of ['aiStatus','imageStatus'])for(const key of Object.keys($(id).dataset))delete $(id).dataset[key];
+ say('invoiceStatus','请选择下一份商品文件。');say('imageStatus','等待图片匹配。');say('aiStatus','等待图片匹配完成。');say('packageStatus','请选择商品文件开始新任务。上批结果与异常文件已保存在下方。');
+ return true;
+}
 let runnerActive=false,runnerRetryTimer=null;
 let backgroundRefreshActive=false,importPollActive=false,importPollTarget=null;
 const importProgressCards=new Map();
@@ -227,13 +241,19 @@ async function continueBackground(){
   if(!runnerRetryTimer)runnerRetryTimer=setTimeout(()=>{runnerRetryTimer=null;refreshBackgroundJobs()},15000);
  }finally{runnerActive=false}
 }
-async function jobsAPI(path,options={}){const response=await fetch('/api/jobs'+path,{...options,headers:{'Content-Type':'application/json',...options.headers}});const body=await response.json();if(!response.ok)throw Error(body.error||'后台任务服务暂时不可用');return body}
+async function jobsAPI(path,options={}){
+ const retryable=!options.method||options.method==='GET'||options.method==='PUT'||/\/ready$/.test(path);
+ for(let attempt=0;;attempt++)try{
+  const response=await fetch('/api/jobs'+path,{...options,headers:{'Content-Type':'application/json',...options.headers}});
+  const body=await response.json();if(!response.ok){const error=Error(body.error||'后台任务服务暂时不可用');error.status=response.status;throw error}return body;
+ }catch(error){if(!retryable||attempt>=2||error.status&&error.status<500)throw error;await runnerSleep(500*(attempt+1))}
+}
 async function submitBackground(rows,rev,warnings){
  const matched=rows.filter(r=>r.image);say('imageStatus',`配图完成：${matched.length}款；缺图或图片异常${rows.length-matched.length}款。`);
  let id=crypto.randomUUID();say('aiStatus','正在上传任务和原图，请暂时保持页面打开…');say('packageStatus','文件上传完成后自动修图，并从内部直接导入商城，无需ZIP。');
- const created=await jobsAPI('',{method:'POST',body:JSON.stringify({id,name:$('invoice').files[0]?.name||'粘贴商品',rows:rows.map(r=>({...r,image:undefined,originalImage:undefined,hasImage:!!r.image})),warnings})});id=created.id;
+ const created=await jobsAPI('',{method:'POST',body:JSON.stringify({id,name:$('invoice').files[0]?.name||'粘贴商品',rows:rows.map(r=>({...r,image:undefined,originalImage:undefined,hasImage:!!r.image})),warnings})});id=created.id;currentBackgroundId=id;
  for(let i=0;i<rows.length;i++){if(rev!==generation)return;const r=rows[i];if(!r.image||created.uploadedIndices?.includes(i))continue;say('aiStatus',`${created.resumed?'接续原任务 · ':''}正在上传图片 ${i+1}/${rows.length}，上传完成前请勿退出…`);const bytes=new Uint8Array(await r.image.arrayBuffer());let binary='';for(let n=0;n<bytes.length;n+=32768)binary+=String.fromCharCode(...bytes.subarray(n,n+32768));await jobsAPI('/'+id+'/images/'+i,{method:'PUT',body:JSON.stringify({image:btoa(binary),type:r.image.type,sku:r.sku,name:r.name})})}
- if(rev!==generation)return;const accepted=await jobsAPI('/'+id+'/ready',{method:'POST'});currentBackgroundId=id;say('aiStatus',backgroundProgress(accepted));say('packageStatus','后台自动修图并内部直导商城，可在「后台任务与商城结果」查看进度。');await refreshBackgroundJobs();if(['queued','processing','packaging'].includes(accepted.status))void continueBackground();
+ if(rev!==generation)return;const accepted=await jobsAPI('/'+id+'/ready',{method:'POST',keepalive:true});currentBackgroundId=id;say('aiStatus',backgroundProgress(accepted));say('packageStatus','后台自动修图并内部直导商城，可在「后台任务与商城结果」查看进度。');await refreshBackgroundJobs();if(['queued','processing','packaging'].includes(accepted.status))void continueBackground();
 }
 let mallImportSession=null;const mallImportResults=new Map();
 async function mallPackageBuffer(session,name){
@@ -280,12 +300,12 @@ function backgroundProgress(j){
  if(j.status==='completed')return `已完成${j.completed}/${j.total}款 · ${j.packageCount||0}个上传包可下载`;
  if(j.status==='needs_attention')return j.stage==='preflight'?`资料预检：${j.pending}款待补充，暂不启动新修图`:`已完成${j.completed}款修图，${j.pending}款资料待补充`;
  if(j.status==='paused')return '处理已暂停 · '+j.message;
- if(j.status==='uploading')return `正在上传原图 ${j.uploaded}/${j.expected}，上传完成前请保持页面打开`;
+ if(j.status==='uploading')return j.expected>0&&j.uploaded===j.expected?'原图已全部保存，等待安全接续预检，无需重新上传':`正在上传原图 ${j.uploaded}/${j.expected}，上传完成前请保持页面打开`;
  return `等待后台启动或续跑 · 已完成${j.completed}/${j.total}款（${ratio}%），当前没有商品正在修图`;
 }
 function directImportSummary(j){
  const p=j.importProgress;
- const state=j.stale?'连接中断，等待安全接续':p.eligibleComplete?'合格商品导入完成':j.status==='paused'?'导入已暂停':p.currentSku?'正在导入 '+p.currentSku:p.awaitingPhoto?'等待修图结果':'正在接续导入';
+ const state=j.stale?'连接中断，等待安全接续':p.eligibleComplete?(p.confirmed?'合格商品导入完成':'本批结束：没有可导入商品'):j.status==='paused'?'导入已暂停':p.currentSku?'正在导入 '+p.currentSku:p.awaitingPhoto?'等待修图结果':'正在接续导入';
  return `${state} · 商城已确认${p.confirmed}/${p.total}款（${p.percent}%）· 新增${p.added} · 已有跳过${p.skipped} · 待导入${p.waiting} · 待修图${p.awaitingPhoto} · 待审核${p.review}`;
 }
 function paintImportProgress(j,box){
@@ -293,15 +313,15 @@ function paintImportProgress(j,box){
  let region=box.querySelector('[data-import-progress]');
  if(!region){region=document.createElement('div');region.dataset.importProgress='true';const meter=document.createElement('progress');meter.style.width='100%';meter.setAttribute('aria-label','商城确认进度');region.append(meter,document.createElement('p'));box.append(region)}
  const p=j.importProgress,meter=region.querySelector('progress');meter.max=Math.max(1,p.total);meter.value=p.confirmed;
- region.querySelector('p').textContent=p.eligibleComplete?`可自动处理商品已确认 ${p.confirmed}/${p.eligible}款；另${p.review}款待审核。`:p.currentSku?`当前货号：${p.currentSku}${p.lastProductMs?' · 上款导入用时 '+Math.round(p.lastProductMs/1000)+' 秒':''}`:`已修图待导入 ${p.waiting}款${p.lastProductMs?' · 上款导入用时 '+Math.round(p.lastProductMs/1000)+' 秒':''}`;
+ region.querySelector('p').textContent=p.eligibleComplete&&!p.confirmed?`本批没有可导入商品，${p.review}款已归入异常产品.csv。`:p.eligibleComplete?`可自动处理商品已确认 ${p.confirmed}/${p.eligible}款；另${p.review}款待审核。`:p.currentSku?`当前货号：${p.currentSku}${p.lastProductMs?' · 上款导入用时 '+Math.round(p.lastProductMs/1000)+' 秒':''}`:`已修图待导入 ${p.waiting}款${p.lastProductMs?' · 上款导入用时 '+Math.round(p.lastProductMs/1000)+' 秒':''}`;
 }
 async function refreshImportProgress(){
  if(importPollActive||backgroundRefreshActive||!importPollTarget||document.hidden||mallImportSession)return;
  const id=importPollTarget;importPollActive=true;
  try{const j=await jobsAPI('/'+id+'/status'),card=importProgressCards.get(id);if(id!==importPollTarget)return;
   if(card&&!card.box.dataset.editing){card.text.textContent=backgroundProgress(j)+' · '+j.message;paintImportProgress(j,card.box)}
-  say('aiStatus',backgroundProgress(j));say('packageStatus',j.message);
-  if(!['queued','processing','packaging'].includes(j.status)){importPollTarget=null;setTimeout(()=>void refreshBackgroundJobs(),0)}
+  if(!resetFinishedForeground(j)){$('aiStatus').dataset.completed=j.completed;$('aiStatus').dataset.total=j.total;$('aiStatus').dataset.delivered=(j.mallImported||0)+(j.mallSkipped||0);say('aiStatus',backgroundProgress(j));say('packageStatus',j.message)}
+  if(!(['queued','processing','packaging'].includes(j.status)||(j.status==='uploading'&&j.expected>0&&j.uploaded===j.expected))){importPollTarget=null;setTimeout(()=>void refreshBackgroundJobs(),0)}
  }catch{}finally{importPollActive=false}
 }
 async function refreshBackgroundJobs(){
@@ -310,7 +330,7 @@ async function refreshBackgroundJobs(){
  try{const result=await jobsAPI('');host.replaceChildren();importProgressCards.clear();if(!result.jobs.length){host.textContent='暂无后台任务。上传商品文件及图片后自动建立任务。';return}
   const selected=currentBackgroundId?result.jobs.find(j=>j.id===currentBackgroundId):!$('invoice').files.length&&$('paste').dataset.active!=='yes'?result.jobs.find(j=>j.status!=='uploading'):null;
   importPollTarget=selected?.delivery==='direct'&&['queued','processing','packaging'].includes(selected.status)?selected.id:null;
-  if(selected){$('aiStatus').dataset.completed=selected.completed;$('aiStatus').dataset.total=selected.total;$('aiStatus').dataset.delivered=(selected.mallImported||0)+(selected.mallSkipped||0);$('aiStatus').dataset.delivery=selected.delivery||'package';$('imageStatus').dataset.matched=selected.expected;say('invoiceStatus',`读取成功：${selected.total}款；后台任务已保存。`);say('imageStatus',`配图${selected.expected}款；原图已保存${selected.uploaded}/${selected.expected}；缺图${selected.total-selected.expected}款。`);say('aiStatus',backgroundProgress(selected));say('packageStatus',selected.message);$('packages').replaceChildren();for(const name of selected.packages){const a=document.createElement('a');a.className='download';a.textContent=name;a.href='/api/jobs/'+selected.id+'/files/'+encodeURIComponent(name);a.download=name;$('packages').append(a)}}
+  if(selected&&!resetFinishedForeground(selected)){$('aiStatus').dataset.completed=selected.completed;$('aiStatus').dataset.total=selected.total;$('aiStatus').dataset.delivered=(selected.mallImported||0)+(selected.mallSkipped||0);$('aiStatus').dataset.delivery=selected.delivery||'package';$('imageStatus').dataset.matched=selected.expected;say('invoiceStatus',`读取成功：${selected.total}款；后台任务已保存。`);say('imageStatus',`配图${selected.expected}款；原图已保存${selected.uploaded}/${selected.expected}；缺图${selected.total-selected.expected}款。`);say('aiStatus',backgroundProgress(selected));say('packageStatus',selected.message);$('packages').replaceChildren();for(const name of selected.packages){const a=document.createElement('a');a.className='download';a.textContent=name;a.href='/api/jobs/'+selected.id+'/files/'+encodeURIComponent(name);a.download=name;$('packages').append(a)}}
   for(const j of result.jobs){const box=document.createElement('div');box.className='status';const title=document.createElement('strong');title.textContent=j.name;box.append(title);
    const labels={uploading:'上传尚未完成，请重新选择文件上传',queued:'已上传 · 等待后台续跑',processing:'后台处理中',packaging:'分包待继续',completed:'处理完成',needs_attention:'部分商品待补充',paused:'后台已暂停，需查看原因'};
    const text=document.createElement('p');text.textContent=`${backgroundProgress(j)} · 最近保存：${new Date(j.updatedAt||j.createdAt).toLocaleString('zh-CN')}\n${j.message}${j.lastStepMs?' · 上一步用时'+Math.round(j.lastStepMs/1000)+'秒':''}`;box.append(text);paintImportProgress(j,box);importProgressCards.set(j.id,{box,text});
@@ -322,9 +342,9 @@ async function refreshBackgroundJobs(){
    if(j.status==='paused'){const button=document.createElement('button');button.className='secondary';button.textContent='核对原因后重试未完成商品';button.onclick=async()=>{button.disabled=true;try{await jobsAPI('/'+j.id+'/retry',{method:'POST'});await refreshBackgroundJobs()}catch(e){button.disabled=false;text.textContent=e.message}};box.append(button)}
    host.append(box);
   }
-  const note=document.getElementById('backgroundRunnerNotice');if(note)note.textContent=result.jobs.some(j=>['queued','processing','packaging'].includes(j.status))?'正在自动接续处理；成功结果会逐步保存。':'当前没有可自动处理的商品。';
-  if(result.jobs.some(j=>['queued','processing','packaging'].includes(j.status)))void continueBackground();
+  const note=document.getElementById('backgroundRunnerNotice');if(note)note.textContent=result.jobs.some(j=>(['queued','processing','packaging'].includes(j.status)||(j.status==='uploading'&&j.expected>0&&j.uploaded===j.expected)))?'正在自动接续处理；成功结果会逐步保存。':'当前没有可自动处理的商品。';
+  if(result.jobs.some(j=>(['queued','processing','packaging'].includes(j.status)||(j.status==='uploading'&&j.expected>0&&j.uploaded===j.expected))))void continueBackground();
  }catch(e){host.textContent='暂时无法读取后台任务：'+e.message}finally{backgroundRefreshActive=false}
 }
-(()=>{const section=document.createElement('section');section.className='card export-card';const heading=document.createElement('div');heading.className='card-head';const h=document.createElement('h2');h.textContent='后台任务与商城结果';heading.append(h);const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary';refresh.textContent='刷新状态';refresh.onclick=()=>refreshBackgroundJobs();heading.append(refresh);section.append(heading);const body=document.createElement('div');body.className='card-body';const note=document.createElement('p');note.className='description';note.textContent='看到“服务器已接收全部文件”后可以退出。页面打开时提交即启动并连续处理，最多同时修图2款，限流时降为1款；关闭页面后由已有后台任务续跑，可能等待下一次启动。分类可留空，商城导入时自动分类。新任务修图后逐款内部直导商城，无需生成上传包；已有图片和历史分包保留。商城预检冲突商品单独待审核，其余合格商品继续；进度条按商城已确认数量显示。上传未完成时请保持页面打开。';body.append(note);const runnerNote=document.createElement('p');runnerNote.id='backgroundRunnerNotice';runnerNote.setAttribute('role','status');body.append(runnerNote);const jobs=document.createElement('div');jobs.id='backgroundJobs';jobs.textContent='正在读取任务…';body.append(jobs);section.append(body);document.getElementById('s7').after(section);refreshBackgroundJobs();setInterval(()=>{if(!document.hidden)refreshBackgroundJobs()},15000);setInterval(refreshImportProgress,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshBackgroundJobs()});})();
+(()=>{const section=document.createElement('section');section.className='card export-card';const heading=document.createElement('div');heading.className='card-head';const h=document.createElement('h2');h.textContent='后台任务与商城结果';heading.append(h);const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary';refresh.textContent='刷新状态';refresh.onclick=()=>refreshBackgroundJobs();heading.append(refresh);section.append(heading);const body=document.createElement('div');body.className='card-body';const note=document.createElement('p');note.className='description';note.textContent='看到“服务器已接收全部文件”后可以退出。页面打开时提交即启动并连续处理，最多同时修图2款，限流时降为1款；关闭页面后由已有后台任务续跑，可能等待下一次启动。分类可留空，商城导入时自动分类。新任务修图后逐款内部直导商城，无需生成上传包；已有图片和历史分包保留。商城预检异常商品汇总到异常产品.csv，其余合格商品继续；本批结束后自动回到初始上传界面，历史结果保留。上传未完成时请保持页面打开。';body.append(note);const runnerNote=document.createElement('p');runnerNote.id='backgroundRunnerNotice';runnerNote.setAttribute('role','status');body.append(runnerNote);const jobs=document.createElement('div');jobs.id='backgroundJobs';jobs.textContent='正在读取任务…';body.append(jobs);section.append(body);document.getElementById('s7').after(section);refreshBackgroundJobs();setInterval(()=>{if(!document.hidden)refreshBackgroundJobs()},15000);setInterval(refreshImportProgress,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshBackgroundJobs()});})();
 </script></body></html>
