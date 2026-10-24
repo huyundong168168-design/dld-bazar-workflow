@@ -90,13 +90,19 @@ async function imageBlob(image){
  }
  return await new Promise((ok,fail)=>c.toBlob(b=>b?ok(b):fail(Error('图片导出失败')),'image/png'));
 }
+function pdfTextMatchesRow(t,r){const x=sk(t.str).replace(/\s/g,'');return (r.ean&&/^\d{8,18}$/.test(x)&&key(x)===key(r.ean))||(r.sku&&x===sk(r.sku))}
 async function pdfPictures(file,rows,rev,warnings=[]){
  if(!window.pdfjsLib)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
  const lib=window.pdfjsLib;lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
  const doc=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise,result=new Map();
  try{for(let pn=1;pn<=doc.numPages;pn++){
   if(rev!==generation)return result;say('imageStatus',`正在提取 ${file.name}：第 ${pn}/${doc.numPages} 页`);
-  const page=await doc.getPage(pn),texts=(await page.getTextContent()).items,ops=await page.getOperatorList(),O=lib.OPS;
+  const page=await doc.getPage(pn),texts=(await page.getTextContent()).items;
+  // Use exactly the same identity predicate as per-image matching. A page
+  // without a target code cannot supply a match; avoid decoding its images.
+  const targetRows=rows.filter(r=>texts.some(t=>pdfTextMatchesRow(t,r)));
+  if(!targetRows.length){page.cleanup();await new Promise(ok=>setTimeout(ok,0));continue;}
+  const ops=await page.getOperatorList(),O=lib.OPS;
   let matrix=[1,0,0,1,0,0],stack=[];
   for(let i=0;i<ops.fnArray.length;i++){
    const op=ops.fnArray[i],a=ops.argsArray[i];
@@ -107,7 +113,7 @@ async function pdfPictures(file,rows,rev,warnings=[]){
    else if(op===O.paintImageXObject||op===O.paintInlineImageXObject){
     const ys=[matrix[5],matrix[1]+matrix[5],matrix[3]+matrix[5],matrix[1]+matrix[3]+matrix[5]],lo=Math.min(...ys)-4,hi=Math.max(...ys)+4;
     const rowTexts=texts.filter(t=>t.transform[5]>=lo&&t.transform[5]<=hi);
-    const hits=rows.filter(r=>rowTexts.some(t=>{const x=sk(t.str).replace(/\s/g,'');return (r.ean&&/^\d{8,18}$/.test(x)&&key(x)===key(r.ean))||(r.sku&&x===sk(r.sku))}));
+    const hits=targetRows.filter(r=>rowTexts.some(t=>pdfTextMatchesRow(t,r)));
     if(hits.length!==1)continue;
     try{
      const image=op===O.paintInlineImageXObject?a[0]:await new Promise((ok,fail)=>{const timer=setTimeout(()=>fail(Error('PDF图片读取超时')),10000);const pool=String(a[0]).startsWith('g_')?page.commonObjs:page.objs;pool.get(a[0],img=>{clearTimeout(timer);ok(img)})});
@@ -349,5 +355,5 @@ async function refreshBackgroundJobs(){
   if(result.jobs.some(j=>(['queued','processing','packaging'].includes(j.status)||(j.status==='uploading'&&j.expected>0&&j.uploaded===j.expected))))void continueBackground();
  }catch(e){host.textContent='暂时无法读取后台任务：'+e.message}finally{backgroundRefreshActive=false}
 }
-(()=>{const section=document.createElement('section');section.className='card export-card';const heading=document.createElement('div');heading.className='card-head';const h=document.createElement('h2');h.textContent='后台任务与商城结果';heading.append(h);const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary';refresh.textContent='刷新状态';refresh.onclick=()=>refreshBackgroundJobs();heading.append(refresh);section.append(heading);const body=document.createElement('div');body.className='card-body';const note=document.createElement('p');note.className='description';note.textContent='看到“服务器已接收全部文件”后可以退出。页面打开时提交即启动并连续处理，最多同时修图2款，限流时降为1款；关闭页面后由已有后台任务续跑，可能等待下一次启动。分类可留空，商城导入时自动分类。新任务修图后逐款内部直导商城，无需生成上传包；已有图片和历史分包保留。商城预检异常商品汇总到异常产品.csv，其余合格商品继续；本批结束后自动回到初始上传界面，历史结果保留。上传未完成时请保持页面打开。';body.append(note);const runnerNote=document.createElement('p');runnerNote.id='backgroundRunnerNotice';runnerNote.setAttribute('role','status');body.append(runnerNote);const jobs=document.createElement('div');jobs.id='backgroundJobs';jobs.textContent='正在读取任务…';body.append(jobs);section.append(body);document.getElementById('s7').after(section);refreshBackgroundJobs();setInterval(()=>{if(!document.hidden)refreshBackgroundJobs()},15000);setInterval(refreshImportProgress,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshBackgroundJobs()});})();
+(()=>{const section=document.createElement('section');section.className='card export-card';const heading=document.createElement('div');heading.className='card-head';const h=document.createElement('h2');h.textContent='后台任务与商城结果';heading.append(h);const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary';refresh.textContent='刷新状态';refresh.onclick=()=>refreshBackgroundJobs();heading.append(refresh);section.append(heading);const body=document.createElement('div');body.className='card-body';const note=document.createElement('p');note.className='description';note.textContent='看到“服务器已接收全部文件”后可以退出。页面打开时提交即启动并连续处理，最多同时修图3款，限流时降为1款；关闭页面后由已有后台任务续跑，可能等待下一次启动。分类可留空，商城导入时自动分类。新任务修图后逐款内部直导商城，无需生成上传包；已有图片和历史分包保留。商城预检异常商品汇总到异常产品.csv，其余合格商品继续；本批结束后自动回到初始上传界面，历史结果保留。上传未完成时请保持页面打开。';body.append(note);const runnerNote=document.createElement('p');runnerNote.id='backgroundRunnerNotice';runnerNote.setAttribute('role','status');body.append(runnerNote);const jobs=document.createElement('div');jobs.id='backgroundJobs';jobs.textContent='正在读取任务…';body.append(jobs);section.append(body);document.getElementById('s7').after(section);refreshBackgroundJobs();setInterval(()=>{if(!document.hidden)refreshBackgroundJobs()},15000);setInterval(refreshImportProgress,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshBackgroundJobs()});})();
 </script></body></html>
